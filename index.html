@@ -69,6 +69,10 @@ nav.top .links a{text-decoration:none}
 .work{flex:0 0 clamp(250px,26vw,340px);scroll-snap-align:start}
 .work .tile{background:var(--wall);aspect-ratio:4/5;display:flex;align-items:center;justify-content:center}
 .work .tile svg{width:92%;height:auto}
+.ph{width:100%;height:100%;object-fit:cover;display:block}
+.work .tile.photo{align-items:stretch}
+.hero .easel .ph{aspect-ratio:4/5;height:auto}
+.proof .scatter .ph{aspect-ratio:1;height:auto;border:8px solid var(--wall)}
 .work .lab{padding:14px 2px 0;font-size:13px;line-height:1.45}
 .work .lab b{font-weight:430;font-style:italic;font-size:17px;display:block;letter-spacing:-0.01em}
 .work .lab .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
@@ -391,6 +395,10 @@ tr.click:hover td{background:var(--wall)}
 </div>
 
 <script>
+/* ---------- photos ----------
+   Drop the shop's own photos into /photos with these names. Any missing file falls back to the drawing. */
+const PHOTOS={hero:"photos/hero.jpg",works:["photos/work-1.jpg","photos/work-2.jpg","photos/work-3.jpg","photos/work-4.jpg","photos/work-5.jpg","photos/work-6.jpg","photos/work-7.jpg"],scatter:["photos/extra-1.jpg","photos/extra-2.jpg","photos/extra-3.jpg","photos/extra-4.jpg"]};
+function tryPhoto(el,src,alt,onOk){if(!el||!src)return;const im=new Image();im.onload=()=>{el.innerHTML=`<img class="ph" src="${src}" alt="${alt}">`;if(onOk)onOk()};im.src=src}
 /* ---------- data ---------- */
 const PAINTS=[
  {id:"blush",name:"Blush",c:"#F3C9D1"},{id:"ivory",name:"Ivory",c:"#F7F1E6"},{id:"butter",name:"Butter",c:"#F3E3B3"},
@@ -618,7 +626,8 @@ const WORKS=[
 function renderGallery(loading){
   const el=document.getElementById("strip");
   if(loading){el.innerHTML=Array(5).fill(`<div class="work"><div class="tile skel"></div><div class="lab"><div class="skel skel-line" style="width:70%"></div><div class="skel skel-line" style="width:90%"></div></div></div>`).join("");return}
-  el.innerHTML=WORKS.map((w,i)=>{const p=priceOf(w.c);return `<div class="work"><div class="tile">${drawCake(w.c)}</div><div class="lab">${placardHTML(w.c,w.t)}<div class="row"><span>From ${money(p.total)}</span><button class="linkbtn" data-i="${i}">Make one like this</button></div></div></div>`}).join("");
+  el.innerHTML=WORKS.map((w,i)=>{const p=priceOf(w.c);return `<div class="work"><div class="tile" id="tile${i}">${drawCake(w.c)}</div><div class="lab">${placardHTML(w.c,w.t)}<div class="row"><span>From ${money(p.total)}</span><button class="linkbtn" data-i="${i}">Make one like this</button></div></div></div>`}).join("");
+  WORKS.forEach((w,i)=>{const t=document.getElementById("tile"+i);tryPhoto(t,PHOTOS.works[i],w.t,()=>t.classList.add("photo"))});
   el.onclick=e=>{const b=e.target.closest("[data-i]");if(!b)return;const w=WORKS[+b.dataset.i];
     cfg=Object.assign({},cfg,JSON.parse(JSON.stringify(w.c)),{date:cfg.date,slot:cfg.slot,handoff:cfg.handoff});
     fsel.value=cfg.flavour;isel.value=cfg.filling;document.getElementById("msg").value=cfg.msg;update();
@@ -706,7 +715,8 @@ window.addEventListener("hashchange",route);
 document.getElementById("heroCake").innerHTML=drawCake(Object.assign({},cfg,{decor:["flowers"],finish:"ruffles",tiers:2,size:8,paint:"blush"}));
 [["sc1",{tiers:1,size:6,shape:"heart",paint:"blush",finish:"vintage",decor:["cherries"]}],["sc2",{tiers:2,size:6,paint:"sage",finish:"knife",decor:["flowers"]}],
  ["sc3",{tiers:1,size:8,paint:"butter",finish:"ruffles",decor:["bows"]}],["sc4",{tiers:1,size:6,shape:"square",paint:"cocoa",finish:"smooth",decor:["gold"]}]]
- .forEach(([id,c])=>document.getElementById(id).innerHTML=drawCake(Object.assign({},cfg,{msg:""},c)));
+ .forEach(([id,c],i)=>{const el=document.getElementById(id);el.innerHTML=drawCake(Object.assign({},cfg,{msg:""},c));tryPhoto(el,PHOTOS.scatter[i],"A CakeCanvas cake")});
+tryPhoto(document.getElementById("heroCake"),PHOTOS.hero,"A custom cake by CakeCanvas.co");
 renderGallery(true);setTimeout(()=>renderGallery(),650);
 renderCal();update();route();
 </script>
