@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CakeCanvas.co | Custom Cakes in Rancho Cordova</title>
+<meta name="description" content="Custom painted cakes made to order in Rancho Cordova, California. Design your cake online, pick a pickup day, and track your order.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Bakery","name":"CakeCanvas.co","address":{"@type":"PostalAddress","addressLocality":"Rancho Cordova","addressRegion":"CA","addressCountry":"US"},"servesCuisine":"Custom cakes","aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","bestRating":"5"}}
+</script>
+<style>
+/* CakeCanvas.co concept build by Studio 1801
+   Concept: a painter's stretched canvas and gallery wall labels. Every cake is a work with a placard.
+   Palette (one job each):
+   --gesso  #EDE7DE  page canvas
+   --ink    #2A1B22  text and 1px hairlines
+   --madder #B4254F  primary action fills only
+   --petal  #F0CFD5  alternating section band
+   --wall   #FFFFFF  elevated surfaces (placards, panels)
+   --graph  #7C7068  metadata and helper text */
+:root{
+  --gesso:#EDE7DE; --ink:#2A1B22; --madder:#B4254F; --petal:#F0CFD5; --wall:#FFFFFF; --graph:#7C7068;
+  --hair:rgba(42,27,34,.22);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --f:"Fraunces", Georgia, "Times New Roman", serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--gesso);color:var(--ink);font-family:var(--f);font-weight:400;font-size:17px;line-height:1.45;letter-spacing:-0.005em;font-optical-sizing:auto;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit}
+.micro{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--graph);font-weight:450}
+.muted{color:var(--graph)}
+
+/* NAV: wordmark, three text links, one pill */
+nav.top{display:flex;align-items:center;gap:28px;padding:22px 4vw;position:relative;z-index:3}
+.mark{font-size:21px;letter-spacing:-0.01em;text-decoration:none;font-style:italic;font-weight:380}
+nav.top .links{display:flex;gap:24px;margin-left:auto;font-size:14px;letter-spacing:.02em}
+nav.top .links a{text-decoration:none}
+.pill{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:12px 22px;font-size:14px;letter-spacing:.03em;border:1px solid var(--ink);text-decoration:none;white-space:nowrap}
+.pill.go{background:var(--madder);border-color:var(--madder);color:var(--wall)}
+.pill.ghost{background:transparent}
+
+/* HERO: anchored left, cropped off the right edge */
+.hero{position:relative;min-height:calc(100vh - 80px);padding:4vh 0 0 4vw;overflow:hidden}
+.hero h1{font-weight:340;font-size:clamp(84px,17vw,248px);line-height:.78;letter-spacing:-0.055em;white-space:nowrap;margin-right:-12vw}
+.hero h1 em{font-style:italic;font-weight:300}
+.hero .lede{max-width:34ch;margin-top:6vh;font-size:19px;line-height:1.42;letter-spacing:-0.01em}
+.hero .cta{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap}
+.hero .easel{position:absolute;right:4vw;bottom:5vh;width:min(36vw,440px)}
+.hero .easel svg{width:100%;height:auto;display:block}
+.placard{background:var(--wall);padding:14px 16px;font-size:13px;line-height:1.4;letter-spacing:.01em}
+.modal b,.detail b,#trackOut b{display:block;font-weight:430;font-style:italic;font-size:16px;margin-bottom:2px}
+.placard b{font-weight:450;font-style:italic;font-size:15px;letter-spacing:0;display:block;margin-bottom:2px}
+.hero .placard{width:230px;margin:-8px 0 0 auto}
+.reveal{opacity:0;transform:translateY(24px);animation:rise .65s var(--ease) forwards}
+.reveal.d2{animation-delay:.12s}.reveal.d3{animation-delay:.24s}.reveal.d4{animation-delay:.36s}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* GALLERY: edge to edge strip, no anchor */
+.band-wall{padding:100px 0 90px}
+.gal-head{display:flex;align-items:flex-end;justify-content:space-between;padding:0 4vw 34px;gap:20px;flex-wrap:wrap}
+.gal-head h2{font-weight:360;font-size:clamp(44px,6vw,92px);line-height:.88;letter-spacing:-0.035em}
+.strip{display:flex;gap:2px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 4vw 18px;scrollbar-width:thin}
+.work{flex:0 0 clamp(250px,26vw,340px);scroll-snap-align:start}
+.work .tile{background:var(--wall);aspect-ratio:4/5;display:flex;align-items:center;justify-content:center}
+.work .tile svg{width:92%;height:auto}
+.work .lab{padding:14px 2px 0;font-size:13px;line-height:1.45}
+.work .lab b{font-weight:430;font-style:italic;font-size:17px;display:block;letter-spacing:-0.01em}
+.work .lab .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.linkbtn{font-size:13px;letter-spacing:.03em;text-decoration:underline;text-underline-offset:3px}
+.skel{background:linear-gradient(90deg,rgba(42,27,34,.05),rgba(42,27,34,.10),rgba(42,27,34,.05));background-size:200% 100%;animation:sk 1.2s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.skel-line{height:12px;margin-top:10px}
+
+/* BUILDER: three panel, options | live cake | rotated label */
+.band-petal{background:var(--petal)}
+.builder{display:grid;grid-template-columns:minmax(320px,410px) 1fr 70px;min-height:100vh}
+.opts{padding:70px 34px 70px 4vw;border-right:1px solid var(--hair)}
+.opts h2{font-weight:360;font-size:clamp(44px,4.4vw,66px);line-height:.88;letter-spacing:-0.035em;margin-bottom:14px}
+.step{padding:22px 0;border-top:1px solid var(--hair)}
+.step .micro{display:block;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--hair);border-radius:999px;padding:8px 15px;font-size:14px;letter-spacing:.01em;background:transparent}
+.chip[aria-pressed="true"]{background:var(--wall);border-color:var(--ink)}
+.chip:disabled{opacity:.35;cursor:not-allowed}
+.daubs{display:flex;gap:10px;flex-wrap:wrap}
+.daub{width:40px;height:40px;border-radius:999px;border:1px solid var(--hair);position:relative}
+.daub[aria-pressed="true"]{outline:1px solid var(--ink);outline-offset:3px}
+.field{width:100%;border:1px solid var(--hair);background:transparent;border-radius:999px;padding:11px 16px;font-size:15px;outline:none}
+.field:focus{border-color:var(--ink);background:var(--wall)}
+textarea.field{border-radius:0;min-height:74px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.drop{display:flex;align-items:center;gap:14px;border:1px dashed var(--hair);padding:12px 14px;font-size:14px;cursor:pointer}
+.drop img{width:56px;height:56px;object-fit:cover}
+.stage{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 4vw;position:sticky;top:0;height:100vh;align-self:start}
+.stage svg{max-height:52vh}
+.stage svg{width:min(100%,560px);height:auto}
+.stage .placard{width:min(100%,520px);padding:22px 24px;margin-top:10px}
+.stage .placard b{font-size:22px}
+.price{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--hair);flex-wrap:wrap}
+.price .num{font-size:64px;line-height:.8;letter-spacing:-0.035em;font-weight:340}
+.rot{border-left:1px solid var(--hair);position:relative}
+.rot span{position:sticky;top:40vh;display:block;writing-mode:vertical-rl;transform:rotate(180deg);font-size:12px;letter-spacing:.27em;text-transform:uppercase;color:var(--graph);margin:60px auto}
+.err{color:var(--madder);font-size:13px;margin-top:8px;min-height:1em}
+
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:6px}
+.cal .dow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--graph);text-align:center;padding:4px 0}
+.day{aspect-ratio:1;border:1px solid transparent;font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent}
+.day .dots{display:flex;gap:2px}
+.day .dots i{width:4px;height:4px;border-radius:9px;background:var(--ink)}
+.day .dots i.off{background:var(--hair)}
+.day:disabled{color:rgba(42,27,34,.3);cursor:not-allowed}
+.day[aria-pressed="true"]{background:var(--wall);border-color:var(--ink)}
+.calnav{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+
+/* PROCESS: rotated label down the left edge, numerals right */
+.process{display:grid;grid-template-columns:90px 1fr;min-height:90vh}
+.process .side{border-right:1px solid var(--hair)}
+.process .side span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:clamp(60px,8vw,120px);font-weight:330;letter-spacing:-0.04em;line-height:.8;display:block;margin:90px auto 0;white-space:nowrap}
+.steps{padding:90px 4vw}
+.srow{display:grid;grid-template-columns:minmax(120px,22vw) 1fr;gap:4vw;padding:34px 0;border-top:1px solid var(--hair);align-items:start}
+.srow .n{font-size:clamp(72px,10vw,150px);line-height:.75;letter-spacing:-0.05em;font-weight:300;font-style:italic}
+.srow h3{font-weight:400;font-size:34px;letter-spacing:-0.015em;line-height:1.05;margin-bottom:10px}
+.srow p{max-width:52ch}
+
+/* PROOF: centred stack, cakes scattered */
+.proof{position:relative;text-align:center;padding:120px 4vw 130px;overflow:hidden}
+.proof .big{font-size:clamp(160px,30vw,420px);line-height:.72;letter-spacing:-0.06em;font-weight:300}
+.proof p{max-width:40ch;margin:28px auto 0;font-size:19px}
+.proof .scatter{position:absolute;width:clamp(110px,13vw,190px)}
+.proof .scatter svg{width:100%;height:auto}
+
+/* TRACK + FAQ: type one side, object the other (inverted from builder) */
+.trackfaq{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:80vh}
+.trackfaq .faq{padding:90px 4vw;border-right:1px solid var(--hair)}
+.trackfaq h2{font-weight:360;font-size:clamp(44px,5vw,80px);line-height:.88;letter-spacing:-0.035em;margin-bottom:30px}
+details{border-top:1px solid var(--hair);padding:18px 0}
+details summary{list-style:none;cursor:pointer;font-size:21px;letter-spacing:-0.01em;display:flex;justify-content:space-between;gap:20px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-weight:300}
+details[open] summary::after{content:"\2212"}
+details p{margin-top:10px;max-width:56ch;color:var(--graph)}
+.trackfaq .track{padding:90px 4vw;background:var(--wall)}
+.trackrow{display:flex;gap:8px;margin-bottom:20px}
+.timeline{list-style:none;margin-top:24px}
+.timeline li{display:grid;grid-template-columns:22px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--hair);color:var(--graph)}
+.timeline li i{width:12px;height:12px;border-radius:99px;border:1px solid var(--ink);margin-top:6px}
+.timeline li.done{color:var(--ink)}
+.timeline li.done i{background:var(--ink)}
+
+footer{padding:70px 4vw 40px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;font-size:14px}
+footer .mark{font-size:clamp(48px,7vw,110px);line-height:.85;letter-spacing:-0.045em;display:block;margin-bottom:18px}
+footer a{display:block;margin-bottom:6px;text-decoration:none}
+footer .credit{grid-column:1/-1;padding-top:30px;border-top:1px solid var(--hair);display:flex;justify-content:space-between;color:var(--graph);font-size:12.5px;flex-wrap:wrap;gap:10px}
+
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;background:var(--gesso);z-index:50;overflow:auto;display:none}
+.overlay.on{display:block}
+.ov-top{display:flex;justify-content:space-between;align-items:center;padding:22px 4vw;border-bottom:1px solid var(--hair);position:sticky;top:0;background:var(--gesso);z-index:2}
+.legal{max-width:68ch;padding:60px 4vw 100px;margin:0 auto}
+.legal h1{font-weight:340;font-size:clamp(56px,8vw,110px);line-height:.85;letter-spacing:-0.045em;margin-bottom:30px}
+.legal h2{font-weight:420;font-size:22px;margin:30px 0 8px}
+.legal p,.legal li{margin-bottom:10px}
+.legal ul{padding-left:20px}
+.modal{position:fixed;inset:0;background:rgba(42,27,34,.45);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.modal .card{background:var(--gesso);max-width:560px;width:100%;padding:34px;max-height:92vh;overflow:auto}
+.modal h3{font-weight:360;font-size:52px;letter-spacing:-0.035em;line-height:.88;margin-bottom:14px}
+.code{font-size:28px;letter-spacing:.08em;font-style:italic}
+
+/* LEDGER (owner dashboard) */
+.ledger{padding:40px 4vw 80px}
+.ledger h1{font-weight:330;font-size:clamp(64px,9vw,140px);line-height:.8;letter-spacing:-0.05em}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--hair);margin:36px 0 30px}
+.kpi{padding:20px 18px 22px 0;border-right:1px solid var(--hair)}
+.kpi:last-child{border-right:0}
+.kpi .v{font-size:clamp(40px,5vw,72px);line-height:.85;letter-spacing:-0.035em;font-weight:330;margin-top:10px}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;font-weight:450;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--graph);padding:10px 10px 10px 0;border-bottom:1px solid var(--ink)}
+td{padding:14px 10px 14px 0;border-bottom:1px solid var(--hair);vertical-align:middle}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--wall)}
+.sel{border:1px solid var(--hair);border-radius:999px;padding:6px 12px;background:transparent;font-size:13px}
+.ledger-grid{display:grid;grid-template-columns:1fr 360px;gap:30px}
+.detail{background:var(--wall);padding:22px;align-self:start;position:sticky;top:90px}
+.detail svg{width:100%;height:auto;background:var(--gesso)}
+.capcal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.capday{background:var(--wall);padding:10px;min-height:96px;font-size:13px;display:flex;flex-direction:column;justify-content:space-between}
+.capday.closed{background:transparent;border:1px dashed var(--hair);color:var(--graph)}
+.capday .ctr{display:flex;gap:6px;align-items:center}
+.capday .ctr button{border:1px solid var(--hair);border-radius:99px;width:22px;height:22px;line-height:1;font-size:13px}
+.note{font-size:12.5px;color:var(--graph);margin-top:14px}
+
+@media (max-width:960px){
+  nav.top .links{display:none}
+  nav.top .pill{margin-left:auto}
+  .hero{min-height:auto;padding-bottom:40px}
+  .hero .easel{position:relative;right:auto;bottom:auto;width:80%;margin:40px 0 0 auto;padding-right:4vw}
+  .builder{grid-template-columns:1fr}
+  .opts{border-right:0;padding:60px 5vw 20px}
+  .rot{display:none}
+  .stage{order:-1;position:sticky;top:0;height:auto;background:var(--petal);z-index:2;padding:12px 5vw;border-bottom:1px solid var(--hair)}
+  .stage svg{width:min(60vw,300px)}
+  .stage .placard{display:none}
+  .mobile-bar{display:flex!important}
+  .process{grid-template-columns:54px 1fr}
+  .srow{grid-template-columns:1fr}
+  .trackfaq{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .ledger-grid{grid-template-columns:1fr}
+  .detail{position:static}
+  .hide-m{display:none}
+}
+.mobile-bar{display:none;position:sticky;bottom:0;z-index:5;background:var(--wall);border-top:1px solid var(--hair);padding:12px 5vw;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a class="mark" href="#top">CakeCanvas.co</a>
+  <div class="links"><a href="#works">Works</a><a href="#commission">Commission</a><a href="#track">Track an order</a></div>
+  <a class="pill go" href="#commission">Design your cake</a>
+</nav>
+
+<main id="top">
+<section class="hero">
+  <h1 class="reveal">Cake is<br>a <em>canvas.</em></h1>
+  <p class="lede reveal d2">Custom cakes, painted by hand in Rancho Cordova. Pick the shape, the flavour and the colour right here, choose your pickup day, and we will take it from sketch to slice.</p>
+  <div class="cta reveal d3">
+    <a class="pill go" href="#commission">Start your cake</a>
+    <a class="pill ghost" href="#works">See recent works</a>
+  </div>
+  <div class="easel reveal d4">
+    <div id="heroCake"></div>
+    <div class="placard"><b>Study in Ruffles, Blush</b>Vanilla bean, strawberry, Swiss meringue buttercream. 8 in, two tiers. Serves 30.</div>
+  </div>
+</section>
+
+<section class="band-wall" id="works">
+  <div class="gal-head">
+    <h2>Now<br>showing.</h2>
+    <p class="muted" style="max-width:36ch">Recent commissions. Tap any piece to load it into the designer and make it yours.</p>
+  </div>
+  <div class="strip" id="strip"></div>
+</section>
+
+<section class="band-petal" id="commission">
+  <div class="builder">
+    <form class="opts" id="form" novalidate>
+      <h2>Commission<br>a piece.</h2>
+      <p class="muted" style="margin-bottom:26px">Every choice redraws your cake and its price. Nothing is charged until we confirm the design with you.</p>
+
+      <div class="step"><span class="micro">01 Occasion</span><div class="chips" data-k="occasion"></div></div>
+      <div class="step"><span class="micro">02 Shape</span><div class="chips" data-k="shape"></div></div>
+      <div class="step"><span class="micro">03 Tiers</span><div class="chips" data-k="tiers"></div>
+        <span class="micro" style="margin-top:16px">Base size</span><div class="chips" data-k="size"></div></div>
+      <div class="step"><span class="micro">04 Sponge and filling</span>
+        <div class="two"><select class="field" id="flavour"></select><select class="field" id="filling"></select></div></div>
+      <div class="step"><span class="micro">05 Finish</span><div class="chips" data-k="finish"></div></div>
+      <div class="step"><span class="micro">06 Colour</span><div class="daubs" id="daubs"></div><div class="muted" id="colName" style="font-size:13px;margin-top:10px"></div></div>
+      <div class="step"><span class="micro">07 Details</span><div class="chips" data-k="decor"></div></div>
+      <div class="step"><span class="micro">08 Message on top</span><input class="field" id="msg" maxlength="22" placeholder="Happy 30th, Mara"></div>
+      <div class="step"><span class="micro">09 Inspiration photo (optional)</span>
+        <label class="drop"><input type="file" accept="image/*" id="photo" hidden><span id="photoPrev"></span><span id="photoTxt">Add a picture you love. We will match the mood.</span></label></div>
+      <div class="step"><span class="micro">10 Pickup day</span>
+        <div class="calnav"><button type="button" class="linkbtn" id="calPrev">Earlier</button><span id="calTitle"></span><button type="button" class="linkbtn" id="calNext">Later</button></div>
+        <div class="cal" id="cal"></div>
+        <div class="chips" data-k="slot" style="margin-top:12px"></div>
+        <div class="chips" data-k="handoff" style="margin-top:8px"></div>
+        <p class="muted" style="font-size:12.5px;margin-top:10px">Dots show open spots that day. We need three days to bake and paint.</p></div>
+      <div class="step"><span class="micro">11 You</span>
+        <div style="display:grid;gap:8px">
+          <input class="field" id="name" placeholder="Your name" autocomplete="name">
+          <input class="field" id="contact" placeholder="Phone or email" autocomplete="email">
+          <textarea class="field" id="notes" placeholder="Allergies, guest count, anything we should know"></textarea>
+        </div>
+        <div class="err" id="err"></div>
+      </div>
+    </form>
+
+    <div class="stage">
+      <div id="liveCake" style="width:100%;display:flex;justify-content:center"></div>
+      <div class="placard" id="livePlacard"></div>
+    </div>
+    <div class="rot"><span id="rotLabel">Commission No. 0143, draft</span></div>
+  </div>
+  <div class="mobile-bar"><div><span class="micro">Estimate</span><div id="mPrice" style="font-size:30px;letter-spacing:-0.02em;line-height:1"></div></div><button class="pill go" id="mSubmit" type="button">Request this cake</button></div>
+</section>
+
+<section class="process">
+  <div class="side"><span>How it works</span></div>
+  <div class="steps">
+    <div class="srow"><div class="n">1</div><div><h3>Compose it here.</h3><p>Use the designer above. Your sketch, price estimate and pickup day arrive at the studio together, so nobody has to dig through DMs.</p></div></div>
+    <div class="srow"><div class="n">2</div><div><h3>We confirm within a day.</h3><p>We look over your design, suggest anything that will make it better, and send a link for a 50% deposit that holds your spot.</p></div></div>
+    <div class="srow"><div class="n">3</div><div><h3>Baked and painted fresh.</h3><p>Sponges are baked the day before pickup and finished by hand. Track every stage with your order code.</p></div></div>
+    <div class="srow"><div class="n">4</div><div><h3>Collect, or we drive it over.</h3><p>Pickup in Rancho Cordova at your chosen time, or local delivery within ten miles.</p></div></div>
+  </div>
+</section>
+
+<section class="proof band-petal">
+  <div class="big">5.0</div>
+  <p>Rated five stars on Google by people in Rancho Cordova. Now they can order the same way they found us.</p>
+  <div class="scatter" style="left:6vw;top:14%;transform:rotate(-8deg)" id="sc1"></div>
+  <div class="scatter" style="right:7vw;top:10%;transform:rotate(7deg)" id="sc2"></div>
+  <div class="scatter hide-m" style="left:14vw;bottom:8%;transform:rotate(5deg)" id="sc3"></div>
+  <div class="scatter hide-m" style="right:15vw;bottom:6%;transform:rotate(-6deg)" id="sc4"></div>
+</section>
+
+<section class="trackfaq" id="track">
+  <div class="faq">
+    <h2>Good to<br>know.</h2>
+    <details><summary>How far ahead should I order?</summary><p>Three days for single tiers, two weeks for weddings and anything with three tiers. Busy weekends fill first, so the calendar shows real availability.</p></details>
+    <details><summary>Do you handle allergies?</summary><p>Tell us in the notes. We can make eggless and nut free sponges, and we will tell you honestly what our kitchen can and cannot guarantee.</p></details>
+    <details><summary>When do I pay?</summary><p>Only after we confirm your design. A 50% deposit holds the date, and the rest is due at pickup.</p></details>
+    <details><summary>Can I change my design after ordering?</summary><p>Yes, up to five days before pickup. Reply to your confirmation or message us with your order code.</p></details>
+    <details><summary>Where do I pick up?</summary><p>In Rancho Cordova. The exact address comes with your confirmation, along with your pickup window.</p></details>
+  </div>
+  <div class="track">
+    <span class="micro">Order status</span>
+    <h2 style="margin-top:14px">Where is<br>my cake?</h2>
+    <div class="trackrow"><input class="field" id="trackCode" placeholder="Order code, e.g. CC-0141"><button class="pill ghost" id="trackBtn" type="button">Check</button></div>
+    <div id="trackOut" class="muted" style="font-size:14px">Try CC-0141 to see a cake in the oven.</div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div><a class="mark" href="#top">CakeCanvas.co</a><p class="muted" style="max-width:36ch">Custom cakes, cookies and celebration pieces. Rancho Cordova, California. Pickup by appointment.</p></div>
+  <div><span class="micro">Visit</span><div style="margin-top:12px"><a href="#works">Works</a><a href="#commission">Commission</a><a href="#track">Track an order</a></div></div>
+  <div><span class="micro">Studio</span><div style="margin-top:12px"><a href="#studio">Owner ledger</a><a href="#terms">Terms of service</a><a href="#privacy">Privacy policy</a></div></div>
+  <div class="credit"><span>&copy; 2026 CakeCanvas.co. Concept preview. Prices and orders are samples.</span><span>Site concept by Studio 1801</span></div>
+</footer>
+
+<!-- confirmation -->
+<div class="modal" id="confirm"><div class="card" id="confirmCard"></div></div>
+
+<!-- owner ledger -->
+<div class="overlay" id="ov-studio">
+  <div class="ov-top"><span class="mark">CakeCanvas.co <span class="micro" style="margin-left:10px">Owner ledger</span></span><a class="pill ghost" href="#top">Back to site</a></div>
+  <div class="ledger" id="ledger"></div>
+</div>
+
+<div class="overlay" id="ov-terms">
+  <div class="ov-top"><span class="mark">CakeCanvas.co</span><a class="pill ghost" href="#top">Back to site</a></div>
+  <article class="legal">
+    <span class="micro">Last updated November 2026</span>
+    <h1>Terms of service.</h1>
+    <p>These terms cover cakes and desserts ordered from CakeCanvas.co ("we", "us"). By placing a request through this site you agree to them.</p>
+    <h2>Requests and confirmation</h2>
+    <p>Submitting the designer form is a request, not a purchase. Your order is confirmed only when we accept it in writing and receive your deposit. Prices shown in the designer are estimates until confirmed.</p>
+    <h2>Deposits and payment</h2>
+    <p>A non-refundable 50% deposit secures your pickup date. The balance is due at pickup or before delivery.</p>
+    <h2>Changes and cancellations</h2>
+    <ul><li>Design changes are welcome up to five days before pickup.</li><li>Cancellations seven or more days before pickup may move the deposit to a future date once.</li><li>Cancellations within seven days forfeit the deposit.</li></ul>
+    <h2>Design interpretation</h2>
+    <p>Each cake is made by hand. Colours, flowers and finishes may vary slightly from photos, sketches and screen colours. Fresh flowers are decorative and not for eating.</p>
+    <h2>Allergens</h2>
+    <p>Our kitchen handles wheat, eggs, dairy, soy and nuts. We take care with special requests but cannot guarantee an allergen free product.</p>
+    <h2>Pickup, delivery and storage</h2>
+    <p>Once a cake is collected or delivered, transport and storage are your responsibility. We will share care instructions with every order.</p>
+    <h2>Contact</h2>
+    <p>Questions about these terms: message us on Instagram @cakecanvas.co.</p>
+  </article>
+</div>
+
+<div class="overlay" id="ov-privacy">
+  <div class="ov-top"><span class="mark">CakeCanvas.co</span><a class="pill ghost" href="#top">Back to site</a></div>
+  <article class="legal">
+    <span class="micro">Last updated November 2026</span>
+    <h1>Privacy policy.</h1>
+    <p>We collect only what we need to make and hand over your cake.</p>
+    <h2>What we collect</h2>
+    <ul><li>Your name, phone number or email address.</li><li>Your cake design, pickup date, notes and any inspiration photo you upload.</li><li>Basic, anonymous site analytics such as page visits.</li></ul>
+    <h2>How we use it</h2>
+    <p>To reply to your request, confirm your order, send pickup reminders and answer questions. We do not sell or rent your information.</p>
+    <h2>Payments</h2>
+    <p>Deposits are handled by our payment provider. We never see or store your full card number.</p>
+    <h2>How long we keep it</h2>
+    <p>Order details are kept for up to two years for records and repeat orders. Ask us at any time and we will delete them.</p>
+    <h2>Your choices</h2>
+    <p>You can ask to see, correct or delete your information by messaging us on Instagram @cakecanvas.co. California residents have rights under the CCPA, and we honour them.</p>
+  </article>
+</div>
+
+<script>
+/* ---------- data ---------- */
+const PAINTS=[
+ {id:"blush",name:"Blush",c:"#F3C9D1"},{id:"ivory",name:"Ivory",c:"#F7F1E6"},{id:"butter",name:"Butter",c:"#F3E3B3"},
+ {id:"sage",name:"Sage",c:"#C9D6BE"},{id:"sky",name:"Powder blue",c:"#C8D9E8"},{id:"lilac",name:"Lilac",c:"#DCCFE6"},
+ {id:"cocoa",name:"Cocoa",c:"#6B4636"}];
+const OPT={
+ occasion:[["birthday","Birthday"],["wedding","Wedding"],["baby","Baby shower"],["anniv","Anniversary"],["justbc","Just because"]],
+ shape:[["round","Round"],["heart","Heart"],["square","Square"]],
+ tiers:[[1,"One"],[2,"Two"],[3,"Three"]],
+ size:[[6,"6 in"],[8,"8 in"],[10,"10 in"]],
+ finish:[["smooth","Smooth"],["ruffles","Ruffles"],["vintage","Vintage piping"],["knife","Palette knife"]],
+ decor:[["flowers","Fresh flowers"],["cherries","Cherries"],["gold","Gold leaf"],["bows","Bows"]],
+ slot:[["10","10 to 11 am"],["13","1 to 2 pm"],["16","4 to 5 pm"]],
+ handoff:[["pickup","Pickup"],["delivery","Delivery, +$20"]]
+};
+const FLAVOURS=["Vanilla bean","Chocolate fudge","Red velvet","Lemon","Ube","Earl grey"];
+const FILLINGS=["Strawberry","Raspberry","Salted caramel","Cream cheese","Lemon curd","Oreo crumble"];
+const SIZEP={4:40,6:65,8:95,10:140}, SERVES={4:6,6:12,8:24,10:38};
+const FINP={smooth:0,ruffles:20,vintage:30,knife:25}, DECP={flowers:25,cherries:12,gold:18,bows:10};
+
+let cfg={occasion:"birthday",shape:"round",tiers:2,size:8,flavour:"Vanilla bean",filling:"Strawberry",finish:"ruffles",paint:"blush",decor:["flowers"],msg:"",slot:"13",handoff:"pickup",date:null};
+
+/* ---------- storage (best effort) ---------- */
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+const today=new Date();today.setHours(0,0,0,0);
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const fmt=d=>d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+const money=n=>"$"+n.toLocaleString("en-US");
+
+function seedOrders(){
+  const mk=(code,name,dd,status,c)=>({code,name,contact:name.split(" ")[0].toLowerCase()+"@mail.com",date:key(addDays(today,dd)),created:key(addDays(today,dd-9)),status,cfg:Object.assign({},cfg,c,{decor:c.decor||[]}),notes:""});
+  const o=[
+   mk("CC-0136","Priya S.",-2,"Collected",{tiers:1,size:6,shape:"heart",paint:"blush",finish:"vintage",decor:["cherries"],msg:"Love you Mom"}),
+   mk("CC-0137","Daniel R.",-1,"Collected",{tiers:2,size:8,paint:"cocoa",finish:"smooth",decor:["gold"],flavour:"Chocolate fudge"}),
+   mk("CC-0138","Alyssa M.",1,"Ready",{tiers:1,size:8,paint:"sage",finish:"knife",decor:["flowers"]}),
+   mk("CC-0139","Jordan T.",2,"Baking",{tiers:3,size:10,paint:"ivory",finish:"ruffles",decor:["flowers"],occasion:"wedding"}),
+   mk("CC-0141","Mara L.",3,"Baking",{tiers:2,size:8,paint:"lilac",finish:"vintage",decor:["bows"],msg:"Happy 30th Mara"}),
+   mk("CC-0142","Kenji W.",6,"Confirmed",{tiers:1,size:6,paint:"sky",finish:"smooth",decor:["bows"],occasion:"baby",msg:"Oh baby"}),
+   mk("CC-0144","Sofia G.",9,"Request",{tiers:2,size:6,shape:"square",paint:"butter",finish:"knife",decor:["flowers","gold"]})];
+  o.forEach(x=>{x.price=priceOf(x.cfg).total;x.slot=x.cfg.slot});
+  return o;
+}
+let orders=store.get("cc_orders",null)||seedOrders();
+let cap=store.get("cc_cap",{});   // key -> {slots:n, closed:bool}
+const save=()=>{store.set("cc_orders",orders);store.set("cc_cap",cap)};
+
+function dayCap(d){const k=key(d);const c=cap[k];if(c)return c;return {slots:4,closed:d.getDay()===1}}
+function booked(d){const k=key(d);let n=orders.filter(o=>o.date===k&&o.status!=="Collected").length;
+  const h=(d.getDate()*7+d.getMonth()*3)%5; if(d>addDays(today,3)) n+= (h===0?4:h===1?3:h===2?1:0); return n}
+function openSlots(d){const c=dayCap(d);if(c.closed)return 0;return Math.max(0,c.slots-booked(d))}
+
+/* ---------- price ---------- */
+function tierSizes(c){const s=[];let cur=+c.size;for(let i=0;i<c.tiers;i++){s.push(Math.max(4,cur));cur-=2}return s}
+function priceOf(c){
+  const sizes=tierSizes(c);let total=sizes.reduce((a,s)=>a+SIZEP[s],0);
+  total+=FINP[c.finish]||0; (c.decor||[]).forEach(d=>total+=DECP[d]||0);
+  if(c.shape==="heart")total+=15; if(c.shape==="square")total+=10; if(c.handoff==="delivery")total+=20;
+  const serves=sizes.reduce((a,s)=>a+SERVES[s],0);
+  return {total,serves,deposit:Math.round(total/2)};
+}
+
+/* ---------- cake drawing (SVG) ---------- */
+function shade(hex,p){let n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;
+  const f=p<0?0:255,t=Math.abs(p);r=Math.round((f-r)*t+r);g=Math.round((f-g)*t+g);b=Math.round((f-b)*t+b);
+  return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}
+function shapePts(shape,cx,cy,w,ry){const p=[];
+  if(shape==="round"){for(let i=0;i<64;i++){const a=i/64*Math.PI*2;p.push([cx+w/2*Math.cos(a),cy+ry*Math.sin(a)])}}
+  else if(shape==="square"){const q=[[cx-w/2,cy],[cx,cy-ry],[cx+w/2,cy],[cx,cy+ry]];
+    for(let s=0;s<4;s++){const A=q[s],B=q[(s+1)%4];for(let i=0;i<16;i++){const t=i/16;p.push([A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t])}}}
+  else{for(let i=0;i<64;i++){const t=i/64*Math.PI*2;const x=16*Math.pow(Math.sin(t),3);const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+    p.push([cx+x*(w/33),cy-(y+2)*(ry/14)])}}
+  return p}
+const pd=(pts,dy=0)=>"M"+pts.map(p=>p[0].toFixed(1)+","+(p[1]+dy).toFixed(1)).join("L")+"Z";
+function rnd(seed){let s=seed;return()=>{s=(s*9301+49297)%233280;return s/233280}}
+
+function drawCake(c,opts={}){
+  const paint=(PAINTS.find(p=>p.id===c.paint)||PAINTS[0]).c;
+  const side=shade(paint,-0.1), top=shade(paint,0.25), pipe=c.paint==="cocoa"?"#F7F1E6":shade(paint,-0.32);
+  const sizes=tierSizes(c);const H=c.tiers===3?58:66;
+  const R=rnd(c.tiers*31+sizes[0]*7+c.finish.length*13);
+  let s=`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of the cake">`;
+  s+=`<ellipse cx="200" cy="352" rx="170" ry="22" fill="#FFFFFF" stroke="#000" stroke-opacity=".25" stroke-width="1"/>`;
+  s+=`<ellipse cx="200" cy="349" rx="150" ry="16" fill="none" stroke="#000" stroke-opacity=".1" stroke-width="1"/>`;
+  let base=344, topInfo=null;
+  sizes.forEach((sz,i)=>{
+    const w=sz*24+(sz===4?10:0), ry=w*.15, topY=base-H;
+    const pts=shapePts(c.shape,200,0,w,ry);
+    s+=`<path d="${pd(pts,base)}" fill="${shade(paint,-0.2)}" stroke="#000" stroke-opacity=".28" stroke-width="1"/>`;
+    for(let y=base-1;y>topY;y-=1.5) s+=`<path d="${pd(pts,y)}" fill="${side}"/>`;
+    s+=`<path d="${pd(pts,topY)}" fill="${top}" stroke="#000" stroke-opacity=".22" stroke-width="1"/>`;
+    const front=pts.filter(p=>p[1]>=0).sort((a,b)=>a[0]-b[0]);
+    // finishes
+    if(c.finish==="ruffles"){for(let r=1;r<=5;r++){const yy=topY+r*H/6;
+      s+=`<path d="M${front.map((p,j)=>p[0].toFixed(1)+","+(p[1]+yy+Math.sin(j*1.3)*2.2).toFixed(1)).join("L")}" fill="none" stroke="${top}" stroke-width="3.2" stroke-linecap="round"/>`;
+      s+=`<path d="M${front.map((p,j)=>p[0].toFixed(1)+","+(p[1]+yy+2.6+Math.sin(j*1.3)*2.2).toFixed(1)).join("L")}" fill="none" stroke="${shade(paint,-0.2)}" stroke-width="1" stroke-opacity=".6"/>`}}
+    if(c.finish==="vintage"){let d="";for(let j=0;j<front.length-4;j+=4){const a=front[j],b=front[j+4];
+      d+=`M${a[0]},${a[1]+topY+6}Q${(a[0]+b[0])/2},${(a[1]+b[1])/2+topY+22} ${b[0]},${b[1]+topY+6}`}
+      s+=`<path d="${d}" fill="none" stroke="${pipe}" stroke-width="2.4" stroke-linecap="round"/>`;
+      front.forEach((p,j)=>{if(j%2===0)s+=`<circle cx="${p[0]}" cy="${p[1]+topY+3}" r="3.4" fill="${top}" stroke="${pipe}" stroke-width=".8"/>`})}
+    if(c.finish==="knife"){const cols=[top,"#FFFFFF",shade(paint,-0.25),"#F3E3B3"];
+      for(let k=0;k<14;k++){const p=front[Math.floor(R()*front.length)];const y=p[1]+topY+8+R()*(H-14);const l=10+R()*18;
+        s+=`<path d="M${p[0]-l/2},${y}l${l},${-2-R()*4}" stroke="${cols[k%4]}" stroke-width="${4+R()*4}" stroke-linecap="round" opacity=".85"/>`}}
+    // bead border at base
+    front.forEach((p,j)=>{if(j%2===0)s+=`<circle cx="${p[0]}" cy="${p[1]+base-3}" r="${c.finish==="smooth"?3.6:2.8}" fill="${top}" stroke="${shade(paint,-0.25)}" stroke-width=".7"/>`});
+    if(c.decor.includes("gold")){for(let k=0;k<5;k++){const p=front[Math.floor(R()*front.length)];const x=p[0],y=p[1]+topY+12+R()*(H-24);
+      s+=`<path d="M${x},${y}l${5+R()*5},${-3}l${3},${6+R()*4}l${-7},${3}z" fill="#C9A24A" opacity=".95"/>`}}
+    if(c.decor.includes("bows")){const x=200,y=ry+topY+H*.5;
+      s+=`<g fill="${pipe}"><path d="M${x},${y}c-10,-10 -18,-6 -16,0c2,6 10,5 16,0z"/><path d="M${x},${y}c10,-10 18,-6 16,0c-2,6 -10,5 -16,0z"/><path d="M${x-2},${y}l-6,14l4,-1l4,-9zM${x+2},${y}l6,14l-4,-1l-4,-9z"/><circle cx="${x}" cy="${y}" r="3"/></g>`}
+    topInfo={w,ry,topY};base=topY;
+  });
+  const t=topInfo;
+  if(c.msg){const fs=Math.min(22,t.w/Math.max(6,c.msg.length)*1.6);
+    s+=`<text x="200" y="${(t.topY+4)/0.5}" transform="scale(1,0.5)" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="${fs}" fill="${pipe}">${esc(c.msg)}</text>`}
+  if(c.decor.includes("flowers")){const fl=[[-0.28,-0.3,13,"#E8A3B4"],[-0.12,-0.55,10,"#F7F1E6"],[-0.36,0.05,9,"#F3E3B3"],[0.3,-0.4,8,"#E8A3B4"]];
+    fl.forEach(([fx,fy,r,col])=>{const x=200+fx*t.w,y=t.topY+fy*t.ry;
+      s+=`<ellipse cx="${x+r*.9}" cy="${y+r*.3}" rx="${r*.8}" ry="${r*.35}" fill="#8FA57F" transform="rotate(-20 ${x} ${y})"/>`;
+      for(let k=0;k<6;k++){const a=k/6*Math.PI*2;s+=`<circle cx="${x+Math.cos(a)*r*.55}" cy="${y+Math.sin(a)*r*.4}" r="${r*.5}" fill="${col}" stroke="#000" stroke-opacity=".12" stroke-width=".6"/>`}
+      s+=`<circle cx="${x}" cy="${y}" r="${r*.28}" fill="${shade(col,-0.35)}"/>`})}
+  if(c.decor.includes("cherries")){[-0.32,-0.1,0.14,0.34].forEach((fx,k)=>{const x=200+fx*t.w,y=t.topY-t.ry*.55+Math.abs(fx)*t.ry*.6;
+      s+=`<path d="M${x},${y-6}q4,-14 10,-18" stroke="#3E5B2E" stroke-width="1.4" fill="none"/><circle cx="${x}" cy="${y}" r="7" fill="#9E1B32"/><circle cx="${x-2.4}" cy="${y-2.4}" r="1.8" fill="#FFFFFF" opacity=".6"/>`})}
+  return s+"</svg>";
+}
+function esc(t){return String(t).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+
+/* ---------- placard text ---------- */
+const lab=(k,v)=>(OPT[k].find(o=>String(o[0])===String(v))||[,v])[1];
+function placardHTML(c,title){
+  const p=priceOf(c),sizes=tierSizes(c),paint=PAINTS.find(x=>x.id===c.paint).name;
+  const tiers=c.tiers===1?"single tier":(c.tiers===2?"two tiers":"three tiers");
+  const dec=c.decor.length?", "+c.decor.map(d=>lab("decor",d).toLowerCase()).join(", "):"";
+  return `<b>${esc(title)}</b>${esc(c.flavour)} sponge, ${esc(c.filling.toLowerCase())} filling, ${lab("finish",c.finish).toLowerCase()} buttercream in ${paint.toLowerCase()}${dec}. ${sizes[0]} in ${lab("shape",c.shape).toLowerCase()}, ${tiers}. Serves about ${p.serves}.`;
+}
+function autoTitle(c){const paint=PAINTS.find(x=>x.id===c.paint).name;
+  const f={smooth:"Quiet Study",ruffles:"Study in Ruffles",vintage:"Lambeth Revival",knife:"Palette Knife Sketch"}[c.finish];
+  return `${f}, ${paint}`}
+
+/* ---------- builder UI ---------- */
+const form=document.getElementById("form");
+function renderChips(){
+  form.querySelectorAll(".chips").forEach(box=>{const k=box.dataset.k;
+    box.innerHTML=OPT[k].map(([v,l])=>{const on=k==="decor"?cfg.decor.includes(v):String(cfg[k])===String(v);
+      return `<button type="button" class="chip" data-v="${v}" aria-pressed="${on}">${l}</button>`}).join("");
+    box.onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const v=b.dataset.v;
+      if(k==="decor"){cfg.decor=cfg.decor.includes(v)?cfg.decor.filter(x=>x!==v):cfg.decor.concat(v)}
+      else cfg[k]=(k==="tiers"||k==="size")?+v:v;
+      update()}});
+  const d=document.getElementById("daubs");
+  d.innerHTML=PAINTS.map(p=>`<button type="button" class="daub" style="background:${p.c}" aria-label="${p.name}" aria-pressed="${cfg.paint===p.id}" data-v="${p.id}"></button>`).join("");
+  d.onclick=e=>{const b=e.target.closest(".daub");if(b){cfg.paint=b.dataset.v;update()}};
+  document.getElementById("colName").textContent="Buttercream: "+PAINTS.find(p=>p.id===cfg.paint).name;
+}
+const fsel=document.getElementById("flavour"),isel=document.getElementById("filling");
+fsel.innerHTML=FLAVOURS.map(f=>`<option>${f}</option>`).join("");isel.innerHTML=FILLINGS.map(f=>`<option>${f}</option>`).join("");
+fsel.onchange=()=>{cfg.flavour=fsel.value;update()};isel.onchange=()=>{cfg.filling=isel.value;update()};
+document.getElementById("msg").oninput=e=>{cfg.msg=e.target.value;update(true)};
+
+let calOffset=0;
+function renderCal(){
+  const start=addDays(today,calOffset*14 - today.getDay());
+  const el=document.getElementById("cal");
+  let h=["S","M","T","W","T","F","S"].map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<21;i++){const d=addDays(start,i);const k=key(d);const lead=d>=addDays(today,3);const open=openSlots(d);const c=dayCap(d);
+    const ok=lead&&open>0;
+    let dots="";if(lead&&!c.closed){for(let j=0;j<c.slots;j++)dots+=`<i class="${j<open?"":"off"}"></i>`}
+    h+=`<button type="button" class="day" data-k="${k}" ${ok?"":"disabled"} aria-pressed="${cfg.date===k}" title="${c.closed&&lead?"Closed":open?open+" open":"Full"}">${d.getDate()}<span class="dots">${dots}</span></button>`}
+  el.innerHTML=h;
+  document.getElementById("calTitle").textContent=start.toLocaleDateString("en-US",{month:"long",day:"numeric"})+" to "+addDays(start,20).toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  el.onclick=e=>{const b=e.target.closest(".day");if(b&&!b.disabled){cfg.date=b.dataset.k;renderCal();update(true)}};
+}
+document.getElementById("calPrev").onclick=()=>{if(calOffset>0){calOffset--;renderCal()}};
+document.getElementById("calNext").onclick=()=>{if(calOffset<3){calOffset++;renderCal()}};
+
+let photoData=null;
+document.getElementById("photo").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{photoData=r.result;document.getElementById("photoPrev").innerHTML=`<img src="${photoData}" alt="Your inspiration photo">`;document.getElementById("photoTxt").textContent=f.name+" added. Tap to change."};r.readAsDataURL(f)};
+
+const nextNo=()=>{const n=orders.map(o=>+o.code.slice(3)).reduce((a,b)=>Math.max(a,b),0)+1;return "CC-"+String(n).padStart(4,"0")};
+function update(skipChips){
+  if(cfg.shape==="heart"&&cfg.tiers>2)cfg.tiers=2;
+  if(!skipChips)renderChips();
+  document.getElementById("liveCake").innerHTML=drawCake(cfg);
+  const p=priceOf(cfg);
+  const dateTxt=cfg.date?fmt(new Date(cfg.date+"T00:00"))+", "+lab("slot",cfg.slot):"Pick a day";
+  document.getElementById("livePlacard").innerHTML=placardHTML(cfg,autoTitle(cfg))+
+   `<div class="price"><div><span class="micro">Estimate</span><div class="num">${money(p.total)}</div><div class="muted" style="font-size:13px;margin-top:8px">${money(p.deposit)} deposit after we confirm. ${esc(dateTxt)}.</div></div><button class="pill go" type="button" id="submit">Request this cake</button></div>`;
+  document.getElementById("submit").onclick=submit;
+  document.getElementById("mPrice").textContent=money(p.total);
+  document.getElementById("rotLabel").textContent="Commission No. "+nextNo().slice(3)+", "+lab("occasion",cfg.occasion).toLowerCase()+" draft";
+}
+document.getElementById("mSubmit").onclick=submit;
+
+function submit(){
+  const name=document.getElementById("name").value.trim(),contact=document.getElementById("contact").value.trim();
+  const err=document.getElementById("err");
+  if(!cfg.date){err.textContent="Choose a pickup day in step 10.";document.getElementById("cal").scrollIntoView({behavior:"smooth",block:"center"});return}
+  if(!name||!contact){err.textContent="Add your name and a phone number or email so we can confirm.";document.getElementById("name").scrollIntoView({behavior:"smooth",block:"center"});return}
+  err.textContent="";
+  const p=priceOf(cfg);
+  const o={code:nextNo(),name,contact,date:cfg.date,slot:cfg.slot,created:key(today),status:"Request",cfg:JSON.parse(JSON.stringify(cfg)),price:p.total,notes:document.getElementById("notes").value.trim(),photo:!!photoData};
+  orders.push(o);save();renderCal();update();
+  document.getElementById("confirmCard").innerHTML=`<span class="micro">Request received</span><h3 style="margin-top:12px">Thank you, ${esc(name.split(" ")[0])}.</h3>
+   <p>Your sketch is with the studio. We will reply to ${esc(contact)} within a day to confirm the design and send the deposit link.</p>
+   <div style="margin:22px 0;background:var(--wall);padding:18px"><span class="micro">Your order code</span><div class="code">${o.code}</div>
+   <div style="font-size:13.5px;margin-top:10px">${placardHTML(o.cfg,autoTitle(o.cfg))}</div>
+   <div style="margin-top:10px">${fmt(new Date(o.date+"T00:00"))}, ${lab("slot",o.slot)}. Estimate ${money(p.total)}, deposit ${money(p.deposit)}.</div></div>
+   <p class="note">Concept preview: no payment is taken and nothing is sent. Open the owner ledger to see how this request lands on the studio side.</p>
+   <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap"><a class="pill go" href="#studio" onclick="closeConfirm()">See it in the owner ledger</a><button class="pill ghost" onclick="closeConfirm()">Done</button></div>`;
+  document.getElementById("confirm").classList.add("on");
+}
+function closeConfirm(){document.getElementById("confirm").classList.remove("on")}
+document.getElementById("confirm").onclick=e=>{if(e.target.id==="confirm")closeConfirm()};
+
+/* ---------- gallery ---------- */
+const WORKS=[
+ {t:"Study in Ruffles, Blush",c:{tiers:2,size:8,shape:"round",paint:"blush",finish:"ruffles",decor:["flowers"],msg:""}},
+ {t:"Heart, Cherries",c:{tiers:1,size:8,shape:"heart",paint:"ivory",finish:"vintage",decor:["cherries"],msg:"xoxo"}},
+ {t:"Lambeth Revival, Lilac",c:{tiers:2,size:8,shape:"round",paint:"lilac",finish:"vintage",decor:["bows"],msg:""}},
+ {t:"Garden Party",c:{tiers:3,size:10,shape:"round",paint:"sage",finish:"knife",decor:["flowers"],msg:"",occasion:"wedding"}},
+ {t:"Gold Leaf Nocturne",c:{tiers:2,size:8,shape:"square",paint:"cocoa",finish:"smooth",decor:["gold"],msg:"",flavour:"Chocolate fudge",filling:"Salted caramel"}},
+ {t:"Oh Baby, Powder Blue",c:{tiers:1,size:6,shape:"round",paint:"sky",finish:"ruffles",decor:["bows"],msg:"Oh baby",occasion:"baby"}},
+ {t:"Butter and Bloom",c:{tiers:1,size:8,shape:"square",paint:"butter",finish:"knife",decor:["flowers","gold"],msg:"",flavour:"Lemon",filling:"Lemon curd"}}
+].map(w=>({t:w.t,c:Object.assign({},cfg,{occasion:"birthday",flavour:"Vanilla bean",filling:"Strawberry"},w.c)}));
+function renderGallery(loading){
+  const el=document.getElementById("strip");
+  if(loading){el.innerHTML=Array(5).fill(`<div class="work"><div class="tile skel"></div><div class="lab"><div class="skel skel-line" style="width:70%"></div><div class="skel skel-line" style="width:90%"></div></div></div>`).join("");return}
+  el.innerHTML=WORKS.map((w,i)=>{const p=priceOf(w.c);return `<div class="work"><div class="tile">${drawCake(w.c)}</div><div class="lab">${placardHTML(w.c,w.t)}<div class="row"><span>From ${money(p.total)}</span><button class="linkbtn" data-i="${i}">Make one like this</button></div></div></div>`}).join("");
+  el.onclick=e=>{const b=e.target.closest("[data-i]");if(!b)return;const w=WORKS[+b.dataset.i];
+    cfg=Object.assign({},cfg,JSON.parse(JSON.stringify(w.c)),{date:cfg.date,slot:cfg.slot,handoff:cfg.handoff});
+    fsel.value=cfg.flavour;isel.value=cfg.filling;document.getElementById("msg").value=cfg.msg;update();
+    document.getElementById("commission").scrollIntoView({behavior:"smooth"})};
+}
+
+/* ---------- tracking ---------- */
+const STAGES=["Request","Confirmed","Baking","Ready","Collected"];
+const STAGE_TXT={Request:"Request received",Confirmed:"Design confirmed, deposit paid",Baking:"Baking and painting",Ready:"Ready for pickup",Collected:"Collected. Enjoy it."};
+function track(){
+  const code=document.getElementById("trackCode").value.trim().toUpperCase().replace(/^CC(\d)/,"CC-$1");
+  const o=orders.find(x=>x.code===code);const out=document.getElementById("trackOut");
+  if(!o){out.innerHTML="We could not find that code. Check your confirmation, or message us on Instagram.";return}
+  const idx=STAGES.indexOf(o.status);
+  out.innerHTML=`<div style="color:var(--ink)"><div class="code">${o.code}</div><div style="margin-top:6px">${fmt(new Date(o.date+"T00:00"))}, ${lab("slot",o.slot)}</div>
+   <div style="display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;margin-top:16px"><div>${drawCake(o.cfg)}</div><div style="font-size:13.5px">${placardHTML(o.cfg,autoTitle(o.cfg))}</div></div>
+   <ul class="timeline">${STAGES.map((s,i)=>`<li class="${i<=idx?"done":""}"><i></i><span>${STAGE_TXT[s]}</span></li>`).join("")}</ul></div>`;
+}
+document.getElementById("trackBtn").onclick=track;
+document.getElementById("trackCode").onkeydown=e=>{if(e.key==="Enter")track()};
+
+/* ---------- owner ledger ---------- */
+let ltab="orders",lsel=null;
+function renderLedger(loading){
+  const L=document.getElementById("ledger");
+  if(loading){L.innerHTML=`<div class="skel" style="height:110px;width:60%"></div><div class="kpis">${Array(4).fill('<div class="kpi"><div class="skel skel-line" style="width:50%"></div><div class="skel" style="height:56px;width:70%;margin-top:14px"></div></div>').join("")}</div>${Array(6).fill('<div class="skel skel-line" style="height:22px;margin-top:14px"></div>').join("")}`;return}
+  const wk=addDays(today,7),active=orders.filter(o=>o.status!=="Collected");
+  const reqs=orders.filter(o=>o.status==="Request").length;
+  const thisWeek=active.filter(o=>{const d=new Date(o.date+"T00:00");return d>=today&&d<wk}).length;
+  const deposits=orders.filter(o=>["Confirmed","Baking","Ready"].includes(o.status)).reduce((a,o)=>a+Math.round(o.price/2),0);
+  let openNext=0;for(let i=3;i<10;i++)openNext+=openSlots(addDays(today,i));
+  const sorted=orders.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  if(!lsel)lsel=(sorted.find(o=>o.status==="Request")||sorted[0]).code;
+  const sel=orders.find(o=>o.code===lsel);
+  let h=`<span class="micro">${today.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</span><h1 style="margin-top:14px">Studio<br>ledger.</h1>
+   <div class="kpis"><div class="kpi"><span class="micro">New requests</span><div class="v">${reqs}</div></div>
+   <div class="kpi"><span class="micro">Pickups next 7 days</span><div class="v">${thisWeek}</div></div>
+   <div class="kpi"><span class="micro">Deposits held</span><div class="v">${money(deposits)}</div></div>
+   <div class="kpi"><span class="micro">Open spots, bookable week</span><div class="v">${openNext}</div></div></div>
+   <div class="tabs"><button class="chip" aria-pressed="${ltab==="orders"}" data-t="orders">Orders</button><button class="chip" aria-pressed="${ltab==="cal"}" data-t="cal">Calendar and capacity</button></div>`;
+  if(ltab==="orders"){
+    h+=`<div class="ledger-grid"><div style="overflow-x:auto"><table><thead><tr><th>Code</th><th>Pickup</th><th>Customer</th><th class="hide-m">Cake</th><th>Total</th><th>Status</th></tr></thead><tbody>`+
+    sorted.map(o=>`<tr class="click" data-c="${o.code}" style="${o.code===lsel?"background:var(--wall)":""}"><td>${o.code}</td><td>${fmt(new Date(o.date+"T00:00"))}</td><td>${esc(o.name)}</td><td class="hide-m">${o.cfg.tiers} tier ${lab("finish",o.cfg.finish).toLowerCase()}, ${PAINTS.find(p=>p.id===o.cfg.paint).name.toLowerCase()}</td><td>${money(o.price)}</td>
+     <td><select class="sel" data-s="${o.code}">${STAGES.map(s=>`<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select></td></tr>`).join("")+`</tbody></table>
+     <p class="note">Change a status and the customer's tracking page updates. In the live build this also sends them a text.</p></div>`;
+    if(sel){const p=priceOf(sel.cfg);h+=`<aside class="detail"><span class="micro">${sel.code}, ${sel.status}</span>${drawCake(sel.cfg)}<div style="font-size:13.5px;margin-top:12px">${placardHTML(sel.cfg,autoTitle(sel.cfg))}</div>
+      <div style="font-size:13.5px;margin-top:12px;padding-top:12px;border-top:1px solid var(--hair)">${esc(sel.name)}, ${esc(sel.contact)}<br>${fmt(new Date(sel.date+"T00:00"))}, ${lab("slot",sel.slot||sel.cfg.slot)}, ${lab("handoff",sel.cfg.handoff).split(",")[0]}<br>${sel.cfg.msg?"Message: “"+esc(sel.cfg.msg)+"”<br>":""}${sel.notes?"Notes: "+esc(sel.notes)+"<br>":""}${sel.photo?"Inspiration photo attached<br>":""}</div>
+      <div class="price"><div><span class="micro">Total</span><div class="num" style="font-size:44px">${money(sel.price)}</div></div><div style="font-size:13px">Deposit ${money(p.deposit)}<br>Balance ${money(sel.price-p.deposit)}</div></div>
+      ${sel.status==="Request"?`<button class="pill go" style="margin-top:16px;width:100%;justify-content:center" data-accept="${sel.code}">Accept and send deposit link</button>`:""}</aside>`}
+    h+=`</div>`;
+  }else{
+    h+=`<p class="muted" style="margin-bottom:16px;max-width:60ch">Set how many cakes you can make each day. Customers only see days with room. Tap a day's name to open or close it.</p><div class="capcal">`;
+    const start=addDays(today,-today.getDay());
+    ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d=>h+=`<div class="micro" style="padding:6px 0">${d}</div>`);
+    for(let i=0;i<28;i++){const d=addDays(start,i),c=dayCap(d),k=key(d),b=orders.filter(o=>o.date===k&&o.status!=="Collected").length;
+      h+=`<div class="capday ${c.closed?"closed":""}" style="${d<today?"opacity:.4":""}"><button class="linkbtn" style="text-align:left" data-tog="${k}">${d.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</button>
+       ${c.closed?"<span>Closed</span>":`<span>${b} booked</span><span class="ctr"><button data-dec="${k}">−</button>${c.slots}<button data-inc="${k}">+</button></span>`}</div>`}
+    h+=`</div>`;
+  }
+  h+=`<p class="note" style="margin-top:30px">Concept preview. Sample orders, saved only in this browser.</p>`;
+  L.innerHTML=h;
+  L.onclick=e=>{const t=e.target;
+    if(t.dataset.t){ltab=t.dataset.t;renderLedger();return}
+    if(t.dataset.accept){orders.find(o=>o.code===t.dataset.accept).status="Confirmed";save();renderLedger();return}
+    const mod=(k,f)=>{const d=new Date(k+"T00:00");cap[k]=Object.assign({},dayCap(d));f(cap[k]);save();renderLedger();renderCal()};
+    if(t.dataset.tog)return mod(t.dataset.tog,c=>c.closed=!c.closed);
+    if(t.dataset.inc)return mod(t.dataset.inc,c=>c.slots=Math.min(12,c.slots+1));
+    if(t.dataset.dec)return mod(t.dataset.dec,c=>c.slots=Math.max(0,c.slots-1));
+    if(t.tagName==="SELECT"||t.tagName==="OPTION")return;
+    const r=t.closest("tr[data-c]");if(r){lsel=r.dataset.c;renderLedger()}};
+  L.onchange=e=>{const s=e.target.dataset.s;if(s){orders.find(o=>o.code===s).status=e.target.value;save();renderLedger()}};
+}
+
+/* ---------- routing ---------- */
+function route(){
+  const h=location.hash.slice(1);
+  ["studio","terms","privacy"].forEach(n=>document.getElementById("ov-"+n).classList.toggle("on",h===n));
+  document.body.style.overflow=["studio","terms","privacy"].includes(h)?"hidden":"";
+  if(h==="studio"){renderLedger(true);setTimeout(()=>renderLedger(),500)}
+  if(["studio","terms","privacy"].includes(h))document.getElementById("ov-"+h).scrollTop=0;
+}
+window.addEventListener("hashchange",route);
+
+/* ---------- init ---------- */
+document.getElementById("heroCake").innerHTML=drawCake(Object.assign({},cfg,{decor:["flowers"],finish:"ruffles",tiers:2,size:8,paint:"blush"}));
+[["sc1",{tiers:1,size:6,shape:"heart",paint:"blush",finish:"vintage",decor:["cherries"]}],["sc2",{tiers:2,size:6,paint:"sage",finish:"knife",decor:["flowers"]}],
+ ["sc3",{tiers:1,size:8,paint:"butter",finish:"ruffles",decor:["bows"]}],["sc4",{tiers:1,size:6,shape:"square",paint:"cocoa",finish:"smooth",decor:["gold"]}]]
+ .forEach(([id,c])=>document.getElementById(id).innerHTML=drawCake(Object.assign({},cfg,{msg:""},c)));
+renderGallery(true);setTimeout(()=>renderGallery(),650);
+renderCal();update();route();
+</script>
+</body>
+</html>
