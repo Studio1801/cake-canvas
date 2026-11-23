@@ -37,17 +37,18 @@ a{color:inherit}
 .muted{color:var(--graph)}
 
 /* NAV: wordmark, three text links, one pill */
-nav.top{display:flex;align-items:center;gap:28px;padding:22px 4vw;position:relative;z-index:3}
+nav.top{display:flex;align-items:center;justify-content:center;padding:26px 4vw 0;position:relative;z-index:3}
 .mark{font-size:21px;letter-spacing:-0.01em;text-decoration:none;font-style:italic;font-weight:380}
-nav.top .links{display:flex;align-items:center;gap:28px;margin-left:auto;font-size:14px;line-height:1;letter-spacing:.02em}
+nav.top .links{display:flex;align-items:center;gap:30px;font-size:11px;line-height:1;letter-spacing:.06em;color:var(--graph)}
+nav.top .links a:hover{color:var(--ink)}
 nav.top .links a{text-decoration:none}
 .pill{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;padding:13px 24px;font-size:14px;line-height:1;letter-spacing:.03em;border:1px solid var(--ink);text-decoration:none;white-space:nowrap}
 .pill.go{background:var(--madder);border-color:var(--madder);color:var(--wall)}
 .pill.ghost{background:transparent}
 
 /* HERO: centered, quiet. Logo, one headline, one sentence, two actions */
-.hero{min-height:calc(100vh - 82px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2vh 6vw 9vh}
-.hero .logo{width:375px;height:375px;display:block;margin:-60px 0 -84px}
+.hero{min-height:calc(100vh - 37px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2vh 6vw 9vh}
+.hero .logo{--s:min(750px,90vw,70vh);width:var(--s);height:var(--s);display:block;margin:calc(var(--s)*-.17) 0 calc(var(--s)*-.26)}
 .hero h1{font-weight:340;font-size:clamp(52px,8.4vw,120px);line-height:.92;letter-spacing:-0.045em}
 .hero h1 em{font-style:italic;font-weight:300}
 .hero .lede{max-width:60ch;margin-top:22px;font-size:17px;line-height:1.45;letter-spacing:0;color:var(--graph);font-style:italic}
@@ -229,10 +230,7 @@ tr.click:hover td{background:var(--wall)}
 .note{font-size:12.5px;color:var(--graph);margin-top:14px}
 
 @media (max-width:960px){
-  nav.top .links{display:none}
-  nav.top .pill{margin-left:auto}
   .hero{min-height:auto;padding:48px 6vw 64px}
-  .hero .logo{width:280px;height:280px;margin:-44px 0 -62px}
   .builder{grid-template-columns:1fr}
   .opts{border-right:0;padding:60px 5vw 20px}
   .rot{display:none}
@@ -255,15 +253,13 @@ tr.click:hover td{background:var(--wall)}
 <body>
 
 <nav class="top">
-  <a class="mark" href="#top">CakeCanvas.co</a>
   <div class="links"><a href="#works">Works</a><a href="#commission">Commission</a><a href="#track">Track an order</a></div>
-  <a class="pill go" href="#commission">Design your cake</a>
 </nav>
 
 <main id="top">
 <section class="hero">
-  <h1 class="reveal"><img class="logo" src="photos/logo.png" alt="CakeCanvas.co" width="375" height="375"></h1>
-  <p class="lede reveal d3">Custom cakes, painted by hand in Rancho Cordova.</p>
+  <h1 class="reveal"><img class="logo" src="photos/logo.png" alt="CakeCanvas.co" width="750" height="750"></h1>
+  <p class="lede reveal d3">Custom cakes, painted by hand in Rancho Cordova. Design yours here and pick it up fresh.</p>
   <div class="cta reveal d4">
     <a class="pill go" href="#commission">Start designing your cake</a>
     <a class="textlink" href="#works">See recent works</a>
