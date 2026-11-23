@@ -208,17 +208,20 @@ textarea.field{border-radius:0;min-height:74px;resize:vertical}
 .proof .scatter svg{width:100%;height:auto}
 
 /* TRACK + FAQ: type one side, object the other (inverted from builder) */
-.trackfaq{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:80vh}
-.trackfaq .faq{padding:90px 4vw;border-right:1px solid var(--hair)}
-.trackfaq h2{margin-bottom:24px}
-details{border-top:1px solid var(--hair);padding:18px 0}
-details summary{list-style:none;cursor:pointer;font-size:21px;letter-spacing:-0.01em;display:flex;justify-content:space-between;gap:20px}
+.trackfaq{max-width:620px;margin:0 auto;padding:110px 6vw 120px}
+.trackfaq .faq{}
+.trackfaq h2{margin-bottom:18px;text-align:center}
+details{border-top:1px solid var(--hair);padding:15px 0}
+details:last-of-type{border-bottom:1px solid var(--hair)}
+details summary{list-style:none;cursor:pointer;font-size:16px;letter-spacing:0;display:flex;justify-content:space-between;align-items:center;gap:20px}
 details summary::-webkit-details-marker{display:none}
-details summary::after{content:"+";font-weight:300}
-details[open] summary::after{content:"\2212"}
-details p{margin-top:10px;max-width:56ch;color:var(--graph)}
-.trackfaq .track{padding:90px 4vw;background:var(--wall)}
-.trackrow{display:flex;gap:8px;margin-bottom:20px}
+details summary::after{content:"+";font-weight:300;color:var(--graph);transition:transform .5s var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin-top:8px;max-width:56ch;color:var(--graph);font-size:14.5px;line-height:1.5}
+.trackfaq .track{margin-top:64px;text-align:center}
+.track-lead{font-family:var(--hf);color:var(--brick);font-size:22px;font-weight:500;margin-bottom:14px}
+.trackrow{display:flex;gap:8px;margin:0 auto 12px;max-width:420px}
+.trackrow .field{flex:1}
 .timeline{list-style:none;margin-top:24px}
 .timeline li{display:grid;grid-template-columns:22px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--hair);color:var(--graph)}
 .timeline li i{width:12px;height:12px;border-radius:99px;border:1px solid var(--ink);margin-top:6px}
@@ -226,7 +229,8 @@ details p{margin-top:10px;max-width:56ch;color:var(--graph)}
 .timeline li.done i{background:var(--ink)}
 
 footer{padding:70px 4vw 40px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;font-size:14px}
-footer .mark{font-family:var(--hf);color:var(--brick);font-style:normal;font-weight:500;font-size:32px;line-height:1.1;letter-spacing:0;display:block;margin-bottom:12px}
+footer .mark{display:block;width:180px;margin:-34px 0 -30px -44px}
+footer .mark img{width:100%;height:auto;display:block}
 footer a{display:block;margin-bottom:6px;text-decoration:none}
 footer .credit{grid-column:1/-1;padding-top:30px;border-top:1px solid var(--hair);display:flex;justify-content:space-between;color:var(--graph);font-size:12.5px;flex-wrap:wrap;gap:10px}
 
@@ -280,7 +284,6 @@ tr.click:hover td{background:var(--wall)}
   .mobile-bar{display:flex!important}
   .process{grid-template-columns:54px 1fr}
   .srow{grid-template-columns:1fr}
-  .trackfaq{grid-template-columns:1fr}
   footer{grid-template-columns:1fr}
   .kpis{grid-template-columns:1fr 1fr}
   .ledger-grid{grid-template-columns:1fr}
@@ -366,24 +369,23 @@ tr.click:hover td{background:var(--wall)}
 
 <section class="trackfaq" id="track">
   <div class="faq">
-    <h2>Good to know.</h2>
-    <details><summary>How far ahead should I order?</summary><p>Three days for single tiers, two weeks for weddings and anything with three tiers. Busy weekends fill first, so the calendar shows real availability.</p></details>
-    <details><summary>Do you handle allergies?</summary><p>Tell us in the notes. We can make eggless and nut free sponges, and we will tell you honestly what our kitchen can and cannot guarantee.</p></details>
-    <details><summary>When do I pay?</summary><p>Only after we confirm your design. A 50% deposit holds the date, and the rest is due at pickup.</p></details>
-    <details><summary>Can I change my design after ordering?</summary><p>Yes, up to five days before pickup. Reply to your confirmation or message us with your order code.</p></details>
-    <details><summary>Where do I pick up?</summary><p>In Rancho Cordova. The exact address comes with your confirmation, along with your pickup window.</p></details>
+    <h2>Questions</h2>
+    <details><summary>How far ahead should I order?</summary><p>At least three days for a single tier. Give us two weeks for weddings or anything three tiers. Weekends go first.</p></details>
+    <details><summary>Can you do eggless or allergy friendly?</summary><p>Everything can be made eggless on request. Tell us about any allergies in the notes and we'll be honest about what our kitchen can promise.</p></details>
+    <details><summary>When do I pay?</summary><p>Only after we confirm your design. Half holds your date, the rest at pickup.</p></details>
+    <details><summary>Can I change my design later?</summary><p>Yes, up to five days before pickup. Just message us with your order code.</p></details>
+    <details><summary>Where do I pick up?</summary><p>In Rancho Cordova. We send the address with your confirmation.</p></details>
   </div>
   <div class="track">
-    <span class="micro">Order status</span>
-    <h2 style="margin-top:14px">Where is my cake?</h2>
-    <div class="trackrow"><input class="field" id="trackCode" placeholder="Order code, e.g. CC-0141"><button class="pill ghost" id="trackBtn" type="button">Check</button></div>
-    <div id="trackOut" class="muted" style="font-size:14px">Try CC-0141 to see a cake in the oven.</div>
+    <p class="track-lead">Already ordered? Check on your cake.</p>
+    <div class="trackrow"><input class="field" id="trackCode" placeholder="Your order code, like CC-0141"><button class="pill go" id="trackBtn" type="button">Check</button></div>
+    <div id="trackOut" class="muted" style="font-size:13px">Try CC-0141 to see one in the oven.</div>
   </div>
 </section>
 </main>
 
 <footer>
-  <div><a class="mark" href="#top">CakeCanvas.co</a><p class="muted" style="max-width:36ch">Custom cakes, cookies and celebration pieces. Rancho Cordova, California. Pickup by appointment.</p></div>
+  <div><a class="mark" href="#top" aria-label="CakeCanvas.co, back to top"><img src="photos/logo.png" alt="CakeCanvas.co" width="180" height="180"></a><p class="muted" style="max-width:36ch">Custom cakes, cookies and celebration pieces. Rancho Cordova, California. Pickup by appointment.</p></div>
   <div><span class="micro">Visit</span><div style="margin-top:12px"><a href="#works">Works</a><a href="#commission">Commission</a><a href="#track">Track an order</a></div></div>
   <div><span class="micro">Studio</span><div style="margin-top:12px"><a href="#studio">Owner ledger</a><a href="#terms">Terms of service</a><a href="#privacy">Privacy policy</a></div></div>
   <div class="credit"><span>&copy; 2026 CakeCanvas.co. Concept preview. Prices and orders are samples.</span><span>Site concept by Studio 1801</span></div>
@@ -825,7 +827,7 @@ renderCal();update();route();
   const tag=(sel,step)=>document.querySelectorAll(sel).forEach((el,i)=>{el.dataset.r="";if(step)el.style.setProperty("--d",(i*step)+"s")});
   tag(".gal-head h2");tag(".gal-head p");tag(".opts>h2");tag(".opts>p");tag(".opts .step");tag(".stage");
   tag(".journey li",.12);tag(".proof .big");tag(".proof p");
-  tag(".faq h2");tag(".faq details",.08);tag(".track>*",.1);tag("footer>div",.08);
+  tag(".faq h2");tag(".faq details",.06);tag(".track>*",.1);tag("footer>div",.08);
   const show=el=>{el.classList.add("in");io.unobserve(el);if(el.classList.contains("big"))count(el)};
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting||e.boundingClientRect.top<0)show(e.target)}),{rootMargin:"0px 0px -8% 0px"});
   addEventListener("scroll",()=>{if(innerHeight+scrollY>=document.documentElement.scrollHeight-8)document.querySelectorAll("[data-r]:not(.in),.strip:not(.in)").forEach(show)},{passive:true});
