@@ -7,7 +7,7 @@
 <meta name="description" content="Custom painted cakes made to order in Rancho Cordova, California. Design your cake online, pick a pickup day, and track your order.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Bakery","name":"CakeCanvas.co","address":{"@type":"PostalAddress","addressLocality":"Rancho Cordova","addressRegion":"CA","addressCountry":"US"},"servesCuisine":"Custom cakes","aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","bestRating":"5"}}
 </script>
@@ -26,6 +26,7 @@
   --hair:rgba(42,27,34,.22);
   --ease:cubic-bezier(0.16,1,0.3,1);
   --f:"Fraunces", Georgia, "Times New Roman", serif;
+  --hf:"Cormorant Garamond", Georgia, serif; --brick:#854848;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:auto}
@@ -35,6 +36,9 @@ button{cursor:pointer;background:none;border:0}
 a{color:inherit}
 .micro{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--graph);font-weight:450}
 .muted{color:var(--graph)}
+
+/* SECTION HEADINGS: quiet, the shop's own serif and brick red */
+main h2{font-family:var(--hf);color:var(--brick);font-weight:500;font-size:clamp(30px,2.8vw,40px);line-height:1.1;letter-spacing:0}
 
 /* NAV: wordmark, three text links, one pill */
 nav.top{display:flex;align-items:center;justify-content:center;padding:26px 4vw 0;position:relative;z-index:3}
@@ -92,7 +96,7 @@ nav.top .links a:hover{background-size:100% 1px}
 /* GALLERY: edge to edge strip, no anchor */
 .band-wall{padding:100px 0 90px}
 .gal-head{display:flex;align-items:flex-end;justify-content:space-between;padding:0 4vw 34px;gap:20px;flex-wrap:wrap}
-.gal-head h2{font-weight:360;font-size:clamp(44px,6vw,92px);line-height:.88;letter-spacing:-0.035em}
+.gal-head h2{}
 .strip{display:flex;gap:2px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 4vw 18px;scrollbar-width:thin}
 .work{flex:0 0 clamp(250px,26vw,340px);scroll-snap-align:start}
 .work .tile{background:var(--wall);aspect-ratio:4/5;display:flex;align-items:center;justify-content:center}
@@ -112,7 +116,7 @@ nav.top .links a:hover{background-size:100% 1px}
 .band-petal{background:var(--petal)}
 .builder{display:grid;grid-template-columns:minmax(320px,410px) 1fr 70px;min-height:100vh}
 .opts{padding:70px 34px 70px 4vw;border-right:1px solid var(--hair)}
-.opts h2{font-weight:360;font-size:clamp(44px,4.4vw,66px);line-height:.88;letter-spacing:-0.035em;margin-bottom:14px}
+.opts h2{margin-bottom:12px}
 .step{padding:22px 0;border-top:1px solid var(--hair)}
 .step .micro{display:block;margin-bottom:12px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -153,16 +157,16 @@ textarea.field{border-radius:0;min-height:74px;resize:vertical}
 /* PROCESS: rotated label down the left edge, numerals right */
 .process{display:grid;grid-template-columns:90px 1fr;min-height:90vh}
 .process .side{border-right:1px solid var(--hair)}
-.process .side span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:clamp(60px,8vw,120px);font-weight:330;letter-spacing:-0.04em;line-height:.8;display:block;margin:90px auto 0;white-space:nowrap}
+.process .side span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--hf);color:var(--brick);font-size:26px;font-weight:500;letter-spacing:.01em;line-height:1;display:block;margin:90px auto 0;white-space:nowrap}
 .steps{padding:90px 4vw}
-.srow{display:grid;grid-template-columns:minmax(120px,22vw) 1fr;gap:4vw;padding:34px 0;border-top:1px solid var(--hair);align-items:start}
-.srow .n{font-size:clamp(72px,10vw,150px);line-height:.75;letter-spacing:-0.05em;font-weight:300;font-style:italic}
-.srow h3{font-weight:400;font-size:34px;letter-spacing:-0.015em;line-height:1.05;margin-bottom:10px}
+.srow{display:grid;grid-template-columns:64px 1fr;gap:2vw;padding:34px 0;border-top:1px solid var(--hair);align-items:start}
+.srow .n{font-family:var(--hf);color:var(--brick);font-size:30px;line-height:1;font-weight:500;font-style:italic}
+.srow h3{font-family:var(--hf);color:var(--brick);font-weight:500;font-size:26px;letter-spacing:0;line-height:1.15;margin-bottom:8px}
 .srow p{max-width:52ch}
 
 /* PROOF: centred stack, cakes scattered */
 .proof{position:relative;text-align:center;padding:120px 4vw 130px;overflow:hidden}
-.proof .big{font-size:clamp(160px,30vw,420px);line-height:.72;letter-spacing:-0.06em;font-weight:300}
+.proof .big{font-family:var(--hf);color:var(--brick);font-size:72px;line-height:1;font-weight:500}
 .proof p{max-width:40ch;margin:28px auto 0;font-size:19px}
 .proof .scatter{position:absolute;width:clamp(110px,13vw,190px)}
 .proof .scatter svg{width:100%;height:auto}
@@ -170,7 +174,7 @@ textarea.field{border-radius:0;min-height:74px;resize:vertical}
 /* TRACK + FAQ: type one side, object the other (inverted from builder) */
 .trackfaq{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:80vh}
 .trackfaq .faq{padding:90px 4vw;border-right:1px solid var(--hair)}
-.trackfaq h2{font-weight:360;font-size:clamp(44px,5vw,80px);line-height:.88;letter-spacing:-0.035em;margin-bottom:30px}
+.trackfaq h2{margin-bottom:24px}
 details{border-top:1px solid var(--hair);padding:18px 0}
 details summary{list-style:none;cursor:pointer;font-size:21px;letter-spacing:-0.01em;display:flex;justify-content:space-between;gap:20px}
 details summary::-webkit-details-marker{display:none}
@@ -186,7 +190,7 @@ details p{margin-top:10px;max-width:56ch;color:var(--graph)}
 .timeline li.done i{background:var(--ink)}
 
 footer{padding:70px 4vw 40px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;font-size:14px}
-footer .mark{font-size:clamp(48px,7vw,110px);line-height:.85;letter-spacing:-0.045em;display:block;margin-bottom:18px}
+footer .mark{font-family:var(--hf);color:var(--brick);font-style:normal;font-weight:500;font-size:32px;line-height:1.1;letter-spacing:0;display:block;margin-bottom:12px}
 footer a{display:block;margin-bottom:6px;text-decoration:none}
 footer .credit{grid-column:1/-1;padding-top:30px;border-top:1px solid var(--hair);display:flex;justify-content:space-between;color:var(--graph);font-size:12.5px;flex-wrap:wrap;gap:10px}
 
@@ -202,7 +206,7 @@ footer .credit{grid-column:1/-1;padding-top:30px;border-top:1px solid var(--hair
 .modal{position:fixed;inset:0;background:rgba(42,27,34,.45);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
 .modal.on{display:flex}
 .modal .card{background:var(--gesso);max-width:560px;width:100%;padding:34px;max-height:92vh;overflow:auto}
-.modal h3{font-weight:360;font-size:52px;letter-spacing:-0.035em;line-height:.88;margin-bottom:14px}
+.modal h3{font-family:var(--hf);color:var(--brick);font-weight:500;font-size:34px;line-height:1.1;margin-bottom:12px}
 .code{font-size:28px;letter-spacing:.08em;font-style:italic}
 
 /* LEDGER (owner dashboard) */
@@ -268,7 +272,7 @@ tr.click:hover td{background:var(--wall)}
 
 <section class="band-wall" id="works">
   <div class="gal-head">
-    <h2>Now<br>showing.</h2>
+    <h2>Now showing.</h2>
     <p class="muted" style="max-width:36ch">Recent commissions. Tap any piece to load it into the designer and make it yours.</p>
   </div>
   <div class="strip" id="strip"></div>
@@ -277,7 +281,7 @@ tr.click:hover td{background:var(--wall)}
 <section class="band-petal" id="commission">
   <div class="builder">
     <form class="opts" id="form" novalidate>
-      <h2>Commission<br>a piece.</h2>
+      <h2>Commission a piece.</h2>
       <p class="muted" style="margin-bottom:26px">Every choice redraws your cake and its price. Nothing is charged until we confirm the design with you.</p>
 
       <div class="step"><span class="micro">01 Occasion</span><div class="chips" data-k="occasion"></div></div>
@@ -338,7 +342,7 @@ tr.click:hover td{background:var(--wall)}
 
 <section class="trackfaq" id="track">
   <div class="faq">
-    <h2>Good to<br>know.</h2>
+    <h2>Good to know.</h2>
     <details><summary>How far ahead should I order?</summary><p>Three days for single tiers, two weeks for weddings and anything with three tiers. Busy weekends fill first, so the calendar shows real availability.</p></details>
     <details><summary>Do you handle allergies?</summary><p>Tell us in the notes. We can make eggless and nut free sponges, and we will tell you honestly what our kitchen can and cannot guarantee.</p></details>
     <details><summary>When do I pay?</summary><p>Only after we confirm your design. A 50% deposit holds the date, and the rest is due at pickup.</p></details>
@@ -347,7 +351,7 @@ tr.click:hover td{background:var(--wall)}
   </div>
   <div class="track">
     <span class="micro">Order status</span>
-    <h2 style="margin-top:14px">Where is<br>my cake?</h2>
+    <h2 style="margin-top:14px">Where is my cake?</h2>
     <div class="trackrow"><input class="field" id="trackCode" placeholder="Order code, e.g. CC-0141"><button class="pill ghost" id="trackBtn" type="button">Check</button></div>
     <div id="trackOut" class="muted" style="font-size:14px">Try CC-0141 to see a cake in the oven.</div>
   </div>
