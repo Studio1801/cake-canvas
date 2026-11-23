@@ -202,7 +202,7 @@ button:active,.btn:active{transform:scale(.94);transition:transform .12s ease-ou
 .glide.dark>.glider{background:var(--ink)}
 .out{animation:outFade .22s ease-in forwards}
 @keyframes outFade{to{opacity:0;transform:translateY(-4px)}}
-.check .flav,.check .msg{background:linear-gradient(rgba(132,24,26,.55),rgba(132,24,26,.55)) 0 55%/0 1.5px no-repeat;transition:background-size .6s var(--ease),color .4s}
+.check .flav,.check .msg{width:fit-content;max-width:100%;background:linear-gradient(rgba(132,24,26,.55),rgba(132,24,26,.55)) 0 55%/0 1.5px no-repeat;transition:background-size .6s var(--ease),color .4s}
 .check.done .flav,.check.done .msg{text-decoration:none;background-size:100% 1.5px}
 .check input:checked{animation:tick .5s var(--spring)}
 @keyframes tick{40%{transform:scale(1.18)}}
@@ -219,7 +219,7 @@ button:active,.btn:active{transform:scale(.94);transition:transform .12s ease-ou
 .typing i{width:7px;height:7px;border-radius:50%;background:#9a9391;animation:dots 1s infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes dots{0%,60%,100%{transform:none;opacity:.5}30%{transform:translateY(-4px);opacity:1}}
-.drawer.on>*{animation:rowIn .7s var(--ease) both}
+.drawer.on:not(.still)>*{animation:rowIn .7s var(--ease) both}
 .drawer.on>*:nth-child(2){animation-delay:.08s}.drawer.on>*:nth-child(3){animation-delay:.13s}.drawer.on>*:nth-child(4){animation-delay:.17s}.drawer.on>*:nth-child(5){animation-delay:.21s}.drawer.on>*:nth-child(n+6){animation-delay:.25s}
 .drawer .stagebtns{position:relative}
 .toast{transition:transform .7s var(--spring)}
@@ -460,7 +460,7 @@ tabs.forEach((b,bi)=>b.onclick=()=>{const dir=bi>tabIdx?"from-right":bi<tabIdx?"
   requestAnimationFrame(()=>{glide($("range"));glide($("mrange"));glide($("pick"),true)});
   if(b.dataset.tab==="orders")renderOrders(true);else if(b.dataset.tab==="prep")renderPrep(true);else if(b.dataset.tab==="money")renderMoney(true);else renderPrices(true);
   dirty();history.replaceState(null,"","#"+b.dataset.tab)});
-addEventListener("resize",()=>{placeBar(document.querySelector(".tabs button.on"));glide($("range"));glide($("mrange"));glide($("pick"),true)});
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if($("v-money").classList.contains("on"))renderChart(false)},150);placeBar(document.querySelector(".tabs button.on"));glide($("range"));glide($("mrange"));glide($("pick"),true)});
 
 /* ---------- orders ---------- */
 let range=7;
@@ -565,6 +565,7 @@ function openDrawer(code,keep){
     <button type="button" class="toggle ${o.paid?"on":""}" data-act="paid" data-c="${o.code}"><i></i>Deposit received</button>
     <div class="stagebtns" data-c="${o.code}">${["Request",...STAGE].map(s=>`<button type="button" data-act="stage" data-s="${s}" class="${o.status===s?"on":""}">${SHOW[s]}</button>`).join("")}</div>
     <div class="acts"><a class="btn" href="${contactHref(o.contact)}">Message ${esc(o.name.split(" ")[0])}</a></div>`;
+  $("drawer").classList.toggle("still",!!keep&&$("drawer").classList.contains("on"));
   if(!keep){$("drawer").scrollTop=0}
   $("drawer").classList.add("on");$("scrim").classList.add("on");
 }
@@ -641,7 +642,7 @@ function renderPrep(enter){
   if(!list.length){$("prep").innerHTML=`<div class="empty">Confirmed orders show up here to bake.</div>`;return}
   const days={};list.forEach(o=>(days[o.date]=days[o.date]||[]).push(o));let i=0;
   $("prep").innerHTML=Object.entries(days).map(([k,os])=>{const d=new Date(k+"T00:00"),n=dayName(d);
-    return `<div class="pday ${enter?"enter":""}" style="--i:${i}"><div class="stamp"><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-US",{weekday:"short",month:"short"})}</span>${["Today","Tomorrow"].includes(n)?`<em>${n}</em>`:""}</div><div>
+    return `<div class="pday ${enter?"enter":""}" style="--i:${i}"><div class="stamp"><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-US",{weekday:"short"})}, ${d.toLocaleDateString("en-US",{month:"short"})}</span>${["Today","Tomorrow"].includes(n)?`<em>${n}</em>`:""}</div><div>
       ${os.map(o=>{i++;const sl=lab("slot",o.slot);return `<label class="check ${o.prepped?"done":""}" data-p="${o.code}">
         <input type="checkbox" ${o.prepped?"checked":""} aria-label="Done: ${esc(o.name)}'s cake">
         <div><div class="flav">${esc(o.cfg.flavour)} with ${esc(o.cfg.filling.toLowerCase())}</div>
@@ -727,19 +728,19 @@ function renderMoney(enter){
 }
 
 function renderChart(enter){
-  const W=1000,H=280,top=26,bot=34,left=44;
+  const W=Math.max(320,Math.round($("chart").clientWidth||1000)),narrow=W<640,H=narrow?220:280,top=26,bot=34,left=narrow?38:44;
   const monday=d=>{const x=new Date(d);x.setDate(x.getDate()-((x.getDay()+6)%7));x.setHours(0,0,0,0);return x};
   const thisWk=monday(today),weeks=[];for(let k=-8;k<=1;k++)weeks.push(addDays(thisWk,k*7));
   const sums=weeks.map(w=>orders.filter(o=>SOLD.includes(o.status)&&dOf(o)>=w&&dOf(o)<addDays(w,7)).reduce((a,o)=>a+o.price,0));
   const max=Math.max(200,...sums),step=max>1200?500:max>600?250:100,cap=Math.ceil(max/step)*step;
-  const y=v=>top+(H-top-bot)*(1-v/cap),bw=(W-left)/weeks.length,barW=Math.min(54,bw*.5);
+  const y=v=>top+(H-top-bot)*(1-v/cap),bw=(W-left)/weeks.length,barW=Math.max(10,Math.min(54,bw*.55));
   let g="";for(let v=0;v<=cap;v+=step)g+=`<line class="grid" x1="${left}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text class="gl" x="${left-10}" y="${y(v)+4}" text-anchor="end">${v?"$"+v.toLocaleString():"0"}</text>`;
-  const cols=weeks.map((w,i)=>{const x=left+bw*i+bw/2,h=H-bot-y(sums[i]),ahead=w>thisWk,now=+w===+thisWk;
+  const cols=weeks.map((w,i)=>{const x=left+bw*i+bw/2,h=H-bot-y(sums[i]),rr=Math.min(8,barW/2),ahead=w>thisWk,now=+w===+thisWk;
     return `<g class="col ${now?"now":""}" style="--i:${i}"><title>${money(sums[i])}, week of ${w.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</title>
       <rect x="${x-bw/2}" y="${top}" width="${bw}" height="${H-top-bot}" fill="transparent"/>
-      ${sums[i]?`<path class="bar ${ahead?"ahead":""} ${enter?"grow":""}" d="M${x-barW/2},${H-bot} v${-(h-8)} q0,-8 8,-8 h${barW-16} q8,0 8,8 v${h-8} z"/>`:""}
+      ${sums[i]&&h>rr?`<path class="bar ${ahead?"ahead":""} ${enter?"grow":""}" d="M${x-barW/2},${H-bot} v${-(h-rr)} q0,-${rr} ${rr},-${rr} h${barW-2*rr} q${rr},0 ${rr},${rr} v${h-rr} z"/>`:""}
       <text class="v" x="${x}" y="${y(sums[i])-8}" text-anchor="middle">${sums[i]?money(sums[i]):""}</text>
-      <text class="l" x="${x}" y="${H-10}" text-anchor="middle">${now?"This week":w.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</text></g>`}).join("");
+      <text class="l" x="${x}" y="${H-10}" text-anchor="middle">${narrow&&!now&&(i%3||i>=7)?"":now?(narrow?"Now":"This week"):w.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</text></g>`}).join("");
   $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cake sales by week">${g}${cols}</svg>`;
 }
 
