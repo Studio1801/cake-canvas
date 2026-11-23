@@ -50,6 +50,10 @@ main h2{font-family:var(--hf);color:var(--brick);font-weight:500;font-size:clamp
 .journey b{display:block;font-family:var(--hf);color:var(--brick);font-weight:500;font-size:19px;line-height:1.2}
 .journey span{display:block;font-size:13px;line-height:1.4;color:var(--graph);margin-top:2px}
 
+/* RATING: under the logo, quiet */
+.rating{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.02em;color:var(--graph);margin-top:6px}
+.rating .stars{color:var(--brick);font-size:13px;letter-spacing:3px}
+
 /* NAV: wordmark, three text links, one pill */
 nav.top{display:flex;align-items:center;justify-content:center;padding:26px 4vw 0;position:relative;z-index:3}
 .mark{font-size:21px;letter-spacing:-0.01em;text-decoration:none;font-style:italic;font-weight:380}
@@ -78,7 +82,7 @@ nav.top{animation:navIn 1.2s var(--ease) .15s both}
 .hero h1.reveal{animation:logoIn 1.8s var(--ease) both}
 @keyframes logoIn{from{opacity:0;transform:scale(.94);filter:blur(12px)}}
 .reveal{animation:soft 1.3s var(--ease) both}
-.reveal.d3{animation-delay:.65s}.reveal.d4{animation-delay:.85s}
+.reveal.d3{animation-delay:.6s}.reveal.d4{animation-delay:.8s}.reveal.d5{animation-delay:1s}
 @keyframes soft{from{opacity:0;transform:translateY(16px);filter:blur(6px)}}
 [data-r]{opacity:0;transform:translateY(34px);filter:blur(6px);transition:opacity 1.1s var(--ease),transform 1.4s var(--ease),filter 1.1s var(--ease);transition-delay:var(--d,0s)}
 [data-r].in{opacity:1;transform:none;filter:none}
@@ -295,8 +299,9 @@ tr.click:hover td{background:var(--wall)}
 <main id="top">
 <section class="hero">
   <h1 class="reveal"><img class="logo" src="photos/logo.png" alt="CakeCanvas.co" width="750" height="750"></h1>
-  <p class="lede reveal d3">Hand-painted cakes, made to order in Rancho Cordova.<br>You pick the look, we bake it fresh for your day.</p>
-  <div class="cta reveal d4">
+  <div class="rating reveal d3"><span class="stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span> 5.0 on Google, from people in Rancho Cordova</div>
+  <p class="lede reveal d4">Hand-painted cakes, made to order in Rancho Cordova.<br>You pick the look, we bake it fresh for your day.</p>
+  <div class="cta reveal d5">
     <a class="pill go" href="#commission">Start designing your cake</a>
     <a class="textlink" href="#works">See recent works</a>
   </div>
@@ -357,15 +362,6 @@ tr.click:hover td{background:var(--wall)}
     <div class="rot"><span id="rotLabel">Commission No. 0143, draft</span></div>
   </div>
   <div class="mobile-bar"><div><span class="micro">Estimate</span><div id="mPrice" style="font-size:30px;letter-spacing:-0.02em;line-height:1"></div></div><button class="pill go" id="mSubmit" type="button">Request this cake</button></div>
-</section>
-
-<section class="proof band-petal">
-  <div class="big">5.0</div>
-  <p>Rated five stars on Google by people in Rancho Cordova. Now they can order the same way they found us.</p>
-  <div class="scatter" style="left:6vw;top:14%;transform:rotate(-8deg)" id="sc1"></div>
-  <div class="scatter" style="right:7vw;top:10%;transform:rotate(7deg)" id="sc2"></div>
-  <div class="scatter hide-m" style="left:14vw;bottom:8%;transform:rotate(5deg)" id="sc3"></div>
-  <div class="scatter hide-m" style="right:15vw;bottom:6%;transform:rotate(-6deg)" id="sc4"></div>
 </section>
 
 <section class="trackfaq" id="track">
@@ -820,9 +816,6 @@ function route(){
 window.addEventListener("hashchange",route);
 
 /* ---------- init ---------- */
-[["sc1",{tiers:1,size:6,shape:"heart",paint:"blush",finish:"vintage",decor:["cherries"]}],["sc2",{tiers:2,size:6,paint:"sage",finish:"knife",decor:["flowers"]}],
- ["sc3",{tiers:1,size:8,paint:"butter",finish:"ruffles",decor:["bows"]}],["sc4",{tiers:1,size:6,shape:"square",paint:"cocoa",finish:"smooth",decor:["gold"]}]]
- .forEach(([id,c],i)=>{const el=document.getElementById(id);el.innerHTML=drawCake(Object.assign({},cfg,{msg:""},c));tryPhoto(el,PHOTOS.scatter[i],"A CakeCanvas cake")});
 renderGallery(true);setTimeout(()=>renderGallery(),650);
 renderCal();update();route();
 
