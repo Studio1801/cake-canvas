@@ -40,6 +40,16 @@ a{color:inherit}
 /* SECTION HEADINGS: quiet, the shop's own serif and brick red */
 main h2{font-family:var(--hf);color:var(--brick);font-weight:500;font-size:clamp(30px,2.8vw,40px);line-height:1.1;letter-spacing:0}
 
+/* JOURNEY: the four steps, quietly, inside the designer */
+.journey{list-style:none;margin:0 0 30px;padding:0}
+.journey li{position:relative;padding:0 0 16px 26px}
+.journey li::before{content:"";position:absolute;left:0;top:7px;width:9px;height:9px;border-radius:50%;border:1px solid var(--brick);background:transparent}
+.journey li::after{content:"";position:absolute;left:4.5px;top:19px;bottom:1px;width:1px;background:var(--hair)}
+.journey li:last-child{padding-bottom:0}.journey li:last-child::after{display:none}
+.journey li.on::before{background:var(--brick)}
+.journey b{display:block;font-family:var(--hf);color:var(--brick);font-weight:500;font-size:19px;line-height:1.2}
+.journey span{display:block;font-size:13px;line-height:1.4;color:var(--graph);margin-top:2px}
+
 /* NAV: wordmark, three text links, one pill */
 nav.top{display:flex;align-items:center;justify-content:center;padding:26px 4vw 0;position:relative;z-index:3}
 .mark{font-size:21px;letter-spacing:-0.01em;text-decoration:none;font-style:italic;font-weight:380}
@@ -304,7 +314,13 @@ tr.click:hover td{background:var(--wall)}
   <div class="builder">
     <form class="opts" id="form" novalidate>
       <h2>Commission a piece.</h2>
-      <p class="muted" style="margin-bottom:26px">Every choice redraws your cake and its price. Nothing is charged until we confirm the design with you.</p>
+      <p class="muted" style="margin-bottom:22px">Every choice redraws your cake and its price. Nothing is charged until we confirm the design with you.</p>
+      <ol class="journey" aria-label="How it works">
+        <li class="on"><b>Design it here</b><span>Your sketch, price and pickup day reach us together.</span></li>
+        <li><b>We confirm within a day</b><span>Then a 50% deposit holds your spot.</span></li>
+        <li><b>Baked and painted fresh</b><span>Follow along anytime with your order code.</span></li>
+        <li><b>Pickup or delivery</b><span>In Rancho Cordova, or delivered within ten miles.</span></li>
+      </ol>
 
       <div class="step"><span class="micro">01 Occasion</span><div class="chips" data-k="occasion"></div></div>
       <div class="step"><span class="micro">02 Shape</span><div class="chips" data-k="shape"></div></div>
@@ -341,16 +357,6 @@ tr.click:hover td{background:var(--wall)}
     <div class="rot"><span id="rotLabel">Commission No. 0143, draft</span></div>
   </div>
   <div class="mobile-bar"><div><span class="micro">Estimate</span><div id="mPrice" style="font-size:30px;letter-spacing:-0.02em;line-height:1"></div></div><button class="pill go" id="mSubmit" type="button">Request this cake</button></div>
-</section>
-
-<section class="process">
-  <div class="side"><span>How it works</span></div>
-  <div class="steps">
-    <div class="srow"><div class="n">1</div><div><h3>Compose it here.</h3><p>Use the designer above. Your sketch, price estimate and pickup day arrive at the studio together, so nobody has to dig through DMs.</p></div></div>
-    <div class="srow"><div class="n">2</div><div><h3>We confirm within a day.</h3><p>We look over your design, suggest anything that will make it better, and send a link for a 50% deposit that holds your spot.</p></div></div>
-    <div class="srow"><div class="n">3</div><div><h3>Baked and painted fresh.</h3><p>Sponges are baked the day before pickup and finished by hand. Track every stage with your order code.</p></div></div>
-    <div class="srow"><div class="n">4</div><div><h3>Collect, or we drive it over.</h3><p>Pickup in Rancho Cordova at your chosen time, or local delivery within ten miles.</p></div></div>
-  </div>
 </section>
 
 <section class="proof band-petal">
@@ -825,7 +831,7 @@ renderCal();update();route();
   const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const tag=(sel,step)=>document.querySelectorAll(sel).forEach((el,i)=>{el.dataset.r="";if(step)el.style.setProperty("--d",(i*step)+"s")});
   tag(".gal-head h2");tag(".gal-head p");tag(".opts>h2");tag(".opts>p");tag(".opts .step");tag(".stage");
-  tag(".process .side");tag(".srow",.12);tag(".proof .big");tag(".proof p");
+  tag(".journey li",.12);tag(".proof .big");tag(".proof p");
   tag(".faq h2");tag(".faq details",.08);tag(".track>*",.1);tag("footer>div",.08);
   const show=el=>{el.classList.add("in");io.unobserve(el);if(el.classList.contains("big"))count(el)};
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting||e.boundingClientRect.top<0)show(e.target)}),{rootMargin:"0px 0px -8% 0px"});
