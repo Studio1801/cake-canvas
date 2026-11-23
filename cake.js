@@ -46,6 +46,11 @@ function seedOrders(){
    mk("CC-0141","Mara L.",3,"Baking",{tiers:2,size:8,paint:"lilac",finish:"vintage",decor:["bows"],msg:"Happy 30th Mara",flavour:"Ube",filling:"Salted caramel"}),
    mk("CC-0142","Kenji W.",6,"Confirmed",{tiers:1,size:6,paint:"sky",finish:"smooth",decor:["bows"],occasion:"baby",msg:"Oh baby",flavour:"Red velvet",filling:"Cream cheese"}),
    mk("CC-0144","Sofia G.",9,"Request",{tiers:2,size:6,shape:"square",paint:"butter",finish:"knife",decor:["flowers","gold"],flavour:"Earl grey",filling:"Lemon curd"})];
+  /* a few months of past pickups so the money chart has history */
+  const names=["Harleen K.","Ava P.","Noor S.","Ethan B.","Simran D.","Lucia R.","Maya T.","Gurpreet S.","Chloe W.","Arjun M.","Zara H.","Ben L.","Isha G.","Olivia N.","Ravi P.","Emma C."];
+  const looks=[{tiers:1,size:6,paint:"blush",finish:"vintage",decor:["cherries"]},{tiers:2,size:8,paint:"ivory",finish:"ruffles",decor:["flowers"]},{tiers:1,size:8,paint:"cocoa",finish:"smooth",decor:["gold"]},{tiers:1,size:6,shape:"heart",paint:"lilac",finish:"vintage",decor:["bows"]},{tiers:2,size:6,paint:"sage",finish:"knife",decor:["flowers"]},{tiers:3,size:10,paint:"ivory",finish:"smooth",decor:["flowers","gold"],occasion:"wedding"}];
+  for(let w=10,n=100;w>=1;w--){const per=[2,3,1,3,2,4,2,3,3,4][w-1];for(let j=0;j<per;j++,n++){
+    o.push(mk("CC-0"+n,names[(w*3+j)%names.length],-(w*7)+((j*2+w)%6)-1,"Collected",looks[(w+j*2)%(w%5===0?6:5)]))}}
   o.forEach(x=>{x.price=priceOf(x.cfg).total;x.slot=x.cfg.slot;x.paid=["Baking","Ready","Collected"].includes(x.status)});
   return o;
 }
