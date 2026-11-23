@@ -674,11 +674,12 @@ function messageFor(o,to){
       `If you share a photo, tag @cakecanvas.co so we can see it.`,`Kamaljeet, CakeCanvas.co`]};
 }
 function notify(o,to){
-  const m=messageFor(o,to),mail=o.contact.includes("@");
+  const em=o.email||(o.contact.includes("@")?o.contact:null);
+  const m=messageFor(o,to),mail=to==="Confirmed"?!!em:o.contact.includes("@"),addr=mail?(em||o.contact):o.contact;
   $("noteCard").innerHTML=`<h3 id="noteTitle">${m.title} for ${esc(o.name.split(" ")[0])}</h3>
-    <div class="via">This ${mail?"email":"text"} goes out to ${esc(o.contact)} when you ${to==="Confirmed"?"confirm the order":"mark the cake "+(to==="Ready"?"ready":"picked up")}.</div>
-    ${mail?`<div class="mail"><dl><dt>From</dt><dd>CakeCanvas.co</dd><dt>To</dt><dd>${esc(o.contact)}</dd><dt>Subject</dt><dd>${esc(m.subject)}</dd></dl>${m.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`
-      :`<div class="phone"><div class="to">Text to ${esc(o.contact)}</div><div id="bubbleSlot">${calm?`<div class="bubble">${m.body.map(esc).join("<br><br>")}</div>`:`<div class="typing"><i></i><i></i><i></i></div>`}</div></div>`}
+    <div class="via">This ${mail?"email":"text"} goes out to ${esc(addr)} when you ${to==="Confirmed"?"confirm the order":"mark the cake "+(to==="Ready"?"ready":"picked up")}.</div>
+    ${mail?`<div class="mail"><dl><dt>From</dt><dd>CakeCanvas.co</dd><dt>To</dt><dd>${esc(addr)}</dd><dt>Subject</dt><dd>${esc(m.subject)}</dd></dl>${m.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`
+      :`<div class="phone"><div class="to">Text to ${esc(addr)}</div><div id="bubbleSlot">${calm?`<div class="bubble">${m.body.map(esc).join("<br><br>")}</div>`:`<div class="typing"><i></i><i></i><i></i></div>`}</div></div>`}
     <div class="sentmark"><span><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="17" r="15" stroke-width="1.4" opacity=".35"/><path d="M10 17.5l5 5 9-10"/></svg>Sent</span></div>
     <div class="acts"><button type="button" class="lnk" id="noteSkip">Don't send</button><button type="button" class="btn" id="noteSend">Send ${mail?"email":"text"}</button></div>
     <div class="fine">Demo preview. Nothing is actually sent.</div>`;

@@ -37,7 +37,7 @@ const fmt=d=>d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"nu
 const money=n=>"$"+n.toLocaleString("en-US");
 
 function seedOrders(){
-  const mk=(code,name,dd,status,c)=>({code,name,contact:(+code.slice(-1))%2?"(916) 555-01"+code.slice(-2):name.split(" ")[0].toLowerCase()+"@mail.com",date:key(addDays(today,dd)),created:key(addDays(today,dd-9)),status,cfg:Object.assign({},cfg,c,{decor:c.decor||[]}),notes:""});
+  const mk=(code,name,dd,status,c)=>({code,name,contact:(+code.slice(-1))%2?"(916) 555-01"+code.slice(-2):name.split(" ")[0].toLowerCase()+"@mail.com",email:name.split(" ")[0].toLowerCase()+"@mail.com",date:key(addDays(today,dd)),created:key(addDays(today,dd-9)),status,cfg:Object.assign({},cfg,c,{decor:c.decor||[]}),notes:""});
   const o=[
    mk("CC-0136","Priya S.",-2,"Collected",{tiers:1,size:6,shape:"heart",paint:"blush",finish:"vintage",decor:["cherries"],msg:"Love you Mom"}),
    mk("CC-0137","Daniel R.",-1,"Collected",{tiers:2,size:8,paint:"cocoa",finish:"smooth",decor:["gold"],flavour:"Chocolate fudge"}),
