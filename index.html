@@ -123,6 +123,28 @@ nav.top .links a:hover{background-size:100% 1px}
 .chip{border:1px solid var(--hair);border-radius:999px;padding:8px 15px;font-size:14px;letter-spacing:.01em;background:transparent}
 .chip[aria-pressed="true"]{background:var(--wall);border-color:var(--ink)}
 .chip:disabled{opacity:.35;cursor:not-allowed}
+.chip{transition:background-color .45s var(--ease),border-color .45s var(--ease),transform .55s var(--ease),box-shadow .6s var(--ease)}
+.chip:hover{border-color:rgba(42,27,34,.5)}
+.chip:active{transform:scale(.94);transition-duration:.12s}
+.chip[aria-pressed="true"]{box-shadow:0 8px 20px -12px rgba(42,27,34,.55)}
+.daub{transition:transform .6s var(--ease),outline-color .4s var(--ease),outline-offset .5s var(--ease),box-shadow .6s var(--ease);outline:1px solid transparent;outline-offset:8px}
+.daub:hover{transform:scale(1.06)}
+.daub:active{transform:scale(.9);transition-duration:.12s}
+.daub[aria-pressed="true"]{transform:scale(1.1);box-shadow:0 10px 22px -12px rgba(42,27,34,.6)}
+#liveCake{display:grid!important;place-items:center;position:relative;animation:hover 7s ease-in-out infinite}
+#liveCake>svg{grid-area:1/1}
+#liveCake::after{content:"";grid-area:1/1;align-self:end;width:60%;height:30%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.75),transparent);opacity:0;pointer-events:none}
+#liveCake.glow::after{animation:glow 1.1s var(--ease)}
+@keyframes glow{30%{opacity:1}100%{opacity:0}}
+@keyframes hover{50%{transform:translateY(-5px)}}
+.cake-out{animation:cakeOut .6s var(--ease) forwards;pointer-events:none}
+@keyframes cakeOut{to{opacity:0;transform:translateY(-8px) scale(.985);filter:blur(8px)}}
+.cake-in{animation:cakeIn 1s var(--ease) both}
+@keyframes cakeIn{from{opacity:0;transform:translateY(16px) scale(.96);filter:blur(10px)}}
+.placard b.fresh{animation:fresh .8s var(--ease) both}
+@keyframes fresh{from{opacity:0;transform:translateY(6px);filter:blur(4px)}}
+.num.tick{animation:tick .75s var(--ease)}
+@keyframes tick{0%{opacity:.55;transform:translateY(4px)}100%{opacity:1;transform:none}}
 .daubs{display:flex;gap:10px;flex-wrap:wrap}
 .daub{width:40px;height:40px;border-radius:999px;border:1px solid var(--hair);position:relative}
 .daub[aria-pressed="true"]{outline:1px solid var(--ink);outline-offset:3px}
@@ -594,14 +616,17 @@ function autoTitle(c){const paint=PAINTS.find(x=>x.id===c.paint).name;
 const form=document.getElementById("form");
 function renderChips(){
   form.querySelectorAll(".chips").forEach(box=>{const k=box.dataset.k;
-    box.innerHTML=OPT[k].map(([v,l])=>{const on=k==="decor"?cfg.decor.includes(v):String(cfg[k])===String(v);
-      return `<button type="button" class="chip" data-v="${v}" aria-pressed="${on}">${l}</button>`}).join("");
+    const isOn=v=>k==="decor"?cfg.decor.includes(v):String(cfg[k])===String(v);
+    const have=[...box.children];
+    if(have.length===OPT[k].length&&have.every((b,i)=>b.dataset.v===String(OPT[k][i][0])))have.forEach((b,i)=>b.setAttribute("aria-pressed",isOn(OPT[k][i][0])));
+    else box.innerHTML=OPT[k].map(([v,l])=>`<button type="button" class="chip" data-v="${v}" aria-pressed="${isOn(v)}">${l}</button>`).join("");
     box.onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const v=b.dataset.v;
       if(k==="decor"){cfg.decor=cfg.decor.includes(v)?cfg.decor.filter(x=>x!==v):cfg.decor.concat(v)}
       else cfg[k]=(k==="tiers"||k==="size")?+v:v;
       update()}});
   const d=document.getElementById("daubs");
-  d.innerHTML=PAINTS.map(p=>`<button type="button" class="daub" style="background:${p.c}" aria-label="${p.name}" aria-pressed="${cfg.paint===p.id}" data-v="${p.id}"></button>`).join("");
+  if(d.children.length===PAINTS.length)[...d.children].forEach((b,i)=>b.setAttribute("aria-pressed",cfg.paint===PAINTS[i].id));
+  else d.innerHTML=PAINTS.map(p=>`<button type="button" class="daub" style="background:${p.c}" aria-label="${p.name}" aria-pressed="${cfg.paint===p.id}" data-v="${p.id}"></button>`).join("");
   d.onclick=e=>{const b=e.target.closest(".daub");if(b){cfg.paint=b.dataset.v;update()}};
   document.getElementById("colName").textContent="Buttercream: "+PAINTS.find(p=>p.id===cfg.paint).name;
 }
@@ -631,16 +656,40 @@ document.getElementById("photo").onchange=e=>{const f=e.target.files[0];if(!f)re
   r.onload=()=>{photoData=r.result;document.getElementById("photoPrev").innerHTML=`<img src="${photoData}" alt="Your inspiration photo">`;document.getElementById("photoTxt").textContent=f.name+" added. Tap to change."};r.readAsDataURL(f)};
 
 const nextNo=()=>{const n=orders.map(o=>+o.code.slice(3)).reduce((a,b)=>Math.max(a,b),0)+1;return "CC-"+String(n).padStart(4,"0")};
+/* ---------- designer motion ---------- */
+const calmUI=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let lastSig="",lastTitle="",shownPrice=null,priceRaf=0;
+function swapCake(svg){
+  const box=document.getElementById("liveCake"),sig=JSON.stringify(Object.assign({},cfg,{msg:"",date:"",slot:"",handoff:"",occasion:""}));
+  const old=box.querySelector("svg:not(.cake-out)");
+  if(!old||calmUI||sig===lastSig){if(old)old.outerHTML=svg;else box.innerHTML=svg;lastSig=sig;return}
+  lastSig=sig;
+  box.querySelectorAll(".cake-out").forEach(n=>n.remove());
+  old.classList.add("cake-out");setTimeout(()=>old.remove(),700);
+  box.insertAdjacentHTML("beforeend",svg);box.lastElementChild.classList.add("cake-in");
+  box.classList.remove("glow");void box.offsetWidth;box.classList.add("glow");
+}
+function tweenPrice(to){
+  const els=[...document.querySelectorAll("#livePlacard .num"),document.getElementById("mPrice")];
+  const from=shownPrice==null?to:shownPrice;cancelAnimationFrame(priceRaf);
+  if(calmUI||from===to){shownPrice=to;els.forEach(e=>e.textContent=money(to));return}
+  const t0=performance.now(),dur=750;
+  (function f(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,4),v=Math.round(from+(to-from)*e);shownPrice=v;
+    els.forEach(el=>el.textContent=money(v));if(k<1)priceRaf=requestAnimationFrame(f)})(t0);
+  els.forEach(el=>{el.classList.remove("tick");void el.offsetWidth;el.classList.add("tick")});
+}
 function update(skipChips){
   if(cfg.shape==="heart"&&cfg.tiers>2)cfg.tiers=2;
   if(!skipChips)renderChips();
-  document.getElementById("liveCake").innerHTML=drawCake(cfg);
+  swapCake(drawCake(cfg));
   const p=priceOf(cfg);
   const dateTxt=cfg.date?fmt(new Date(cfg.date+"T00:00"))+", "+lab("slot",cfg.slot):"Pick a day";
   document.getElementById("livePlacard").innerHTML=placardHTML(cfg,autoTitle(cfg))+
    `<div class="price"><div><span class="micro">Estimate</span><div class="num">${money(p.total)}</div><div class="muted" style="font-size:13px;margin-top:8px">${money(p.deposit)} deposit after we confirm. ${esc(dateTxt)}.</div></div><button class="pill go" type="button" id="submit">Request this cake</button></div>`;
   document.getElementById("submit").onclick=submit;
-  document.getElementById("mPrice").textContent=money(p.total);
+  const t=autoTitle(cfg),pb=document.querySelector("#livePlacard b");
+  if(lastTitle&&t!==lastTitle&&!calmUI)pb.classList.add("fresh");lastTitle=t;
+  tweenPrice(p.total);
   document.getElementById("rotLabel").textContent="Commission No. "+nextNo().slice(3)+", "+lab("occasion",cfg.occasion).toLowerCase()+" draft";
 }
 document.getElementById("mSubmit").onclick=submit;
