@@ -442,7 +442,7 @@ function leave(el,cb){if(calm||!el){cb();return}el.classList.add("leaving");setT
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]");const card=e.target.closest("[data-c]");
   if(b&&card){const o=find(card.dataset.c);const act=b.dataset.act;
-    if(act==="confirm"){leave(card,()=>{o.status="Confirmed";save();renderOrders(false);toast(`Confirmed. ${o.name.split(" ")[0]} gets the deposit link.`)})}
+    if(act==="confirm"){leave(card,()=>{o.status="Confirmed";save();renderOrders(false);notify(o,"Confirmed")})}
     if(act==="decline"){leave(card,()=>{o.status="Declined";save();renderOrders(false);toast("Request declined.")})}
     if(act==="next"){const to=NEXTS[o.status];
       if(to==="Collected"){leave(card,()=>{o.status=to;save();renderOrders(false);notify(o,"Collected")})}
@@ -450,7 +450,7 @@ document.addEventListener("click",e=>{
         b.textContent=NEXT[to];
         if(to==="Ready")notify(o,"Ready")}}
     if(act==="paid"){o.paid=!o.paid;save();b.classList.toggle("on",o.paid);renderUpcoming(false)}
-    if(act==="stage"){const was=o.status;o.status=b.dataset.s;save();openDrawer(o.code,true);renderOrders(false);if(was!==o.status&&["Ready","Collected"].includes(o.status))notify(o,o.status)}
+    if(act==="stage"){const was=o.status;o.status=b.dataset.s;save();openDrawer(o.code,true);renderOrders(false);if(was!==o.status&&["Confirmed","Ready","Collected"].includes(o.status))notify(o,o.status)}
     return}
   const row=e.target.closest(".row,.slip,.mrow");
   if(row&&!e.target.closest("a"))openDrawer(row.dataset.c);
@@ -570,6 +570,11 @@ $("prep").addEventListener("change",e=>{const row=e.target.closest(".check");if(
 function messageFor(o,to){
   const first=o.name.split(" ")[0],d=dOf(o),when=`${d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})}, ${lab("slot",o.slot)}`;
   const bal=o.price-Math.round(o.price/2),deliv=o.cfg.handoff==="delivery";
+  if(to==="Confirmed")return{title:"Order confirmed",subject:`Your cake is confirmed, ${first}`,
+    body:[`Hi ${first}! Your cake for ${when} is confirmed 🎂`,
+      `To hold your date, please pay the ${money(Math.round(o.price/2))} deposit here: cakecanvas.co/pay/${o.code}`,
+      `The rest (${money(bal)}) is due at ${deliv?"drop off":"pickup"}. Any changes, just reply here.`,
+      `Kamaljeet, CakeCanvas.co`]};
   if(to==="Ready")return{title:"Cake is ready",subject:`Your cake is ready, ${first}`,
     body:[`Hi ${first}! Your cake is finished and ready 🎂`,
       deliv?`We'll drop it off ${when}.`:`Pickup is ${when} in Rancho Cordova. Reply here if you need a different time.`,
@@ -582,7 +587,7 @@ function messageFor(o,to){
 function notify(o,to){
   const m=messageFor(o,to),mail=o.contact.includes("@");
   $("noteCard").innerHTML=`<h3 id="noteTitle">${m.title} for ${esc(o.name.split(" ")[0])}</h3>
-    <div class="via">This ${mail?"email":"text"} goes out to ${esc(o.contact)} when you mark the cake ${to==="Ready"?"ready":"picked up"}.</div>
+    <div class="via">This ${mail?"email":"text"} goes out to ${esc(o.contact)} when you ${to==="Confirmed"?"confirm the order":"mark the cake "+(to==="Ready"?"ready":"picked up")}.</div>
     ${mail?`<div class="mail"><dl><dt>From</dt><dd>CakeCanvas.co</dd><dt>To</dt><dd>${esc(o.contact)}</dd><dt>Subject</dt><dd>${esc(m.subject)}</dd></dl>${m.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`
       :`<div class="phone"><div class="to">Text to ${esc(o.contact)}</div><div class="bubble">${m.body.map(esc).join("<br><br>")}</div></div>`}
     <div class="acts"><button type="button" class="lnk" id="noteSkip">Don't send</button><button type="button" class="btn" id="noteSend">Send ${mail?"email":"text"}</button></div>
@@ -590,7 +595,7 @@ function notify(o,to){
   $("nscrim").classList.add("on");setTimeout(()=>$("noteSend").focus(),50);
   const close=t=>{$("nscrim").classList.remove("on");if(t)toast(t)};
   $("noteSend").onclick=()=>close(`${mail?"Email":"Text"} sent to ${o.name.split(" ")[0]}.`);
-  $("noteSkip").onclick=()=>close(to==="Ready"?"Marked ready, no message sent.":"Marked picked up, no message sent.");
+  $("noteSkip").onclick=()=>close({Confirmed:"Confirmed, no message sent.",Ready:"Marked ready, no message sent.",Collected:"Marked picked up, no message sent."}[to]);
   $("nscrim").onclick=e=>{if(e.target.id==="nscrim")close()};
 }
 addEventListener("keydown",e=>{if(e.key==="Escape")$("nscrim").classList.remove("on")});
