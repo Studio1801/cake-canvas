@@ -12,7 +12,7 @@
 <style>
 /* CakeCanvas.co owner dashboard by Studio 1801
    Palette is lifted from her logo: blush paper, piping red, wine. Requests are order slips with a piped top edge.
-   Two tabs. Orders: what needs a reply, what is coming up, what is done. Prices: what the website charges.
+   Orders: what needs a reply and what is coming up. Bake prep: a kitchen checklist. Financials: money in and still due. Prices: what the website charges.
    Same pink and brick red as the site so it feels like hers, not software. */
 :root{
   --gesso:#FFEDEB; --ink:#2A1B22; --madder:#D92430; --brick:#84181A; --petal:#FBDDDF; --wall:#FFFFFF; --graph:#5E524E;
@@ -35,7 +35,7 @@ h1,h2,h3{font-family:var(--hf);color:var(--brick);font-weight:500;letter-spacing
 .top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(132,24,26,.16);z-index:2}
 .top .logo{width:104px;height:104px;margin:-16px 0 -20px -26px;align-self:center}
 .tabs{position:relative;display:flex;gap:36px}
-.tabs button{position:relative;padding:14px 0 15px;font-size:15px;color:var(--graph);transition:color .5s var(--ease)}
+.tabs button{position:relative;white-space:nowrap;padding:14px 0 15px;font-size:15px;color:var(--graph);transition:color .5s var(--ease)}
 .tabs button:hover,.tabs button.on{color:var(--wine)}
 .tabs .bar{position:absolute;bottom:0;left:0;height:2px;border-radius:2px;background:var(--pipe);z-index:3;transition:transform .7s var(--ease),width .7s var(--ease)}
 .tabs .badge{display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:99px;background:var(--pipe);color:#fff;font-size:10.5px;margin-left:6px;padding:0 5px;vertical-align:2px}
@@ -96,6 +96,65 @@ section.block{margin-top:50px}
 .btn.soft:hover{background:var(--wine);color:#fff}
 .lnk{font-size:13.5px;color:var(--graph);text-decoration:none;background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;padding-bottom:2px;transition:background-size .5s var(--ease),color .3s}
 .lnk:hover{color:var(--wine);background-size:100% 1px}
+
+/* bake prep: a kitchen checklist, one line per cake, grouped by pickup day */
+.pday{display:grid;grid-template-columns:110px 1fr;border-top:1px solid rgba(132,24,26,.16)}
+.pday .stamp b{font-size:40px}
+.check{display:grid;grid-template-columns:34px 1fr 150px;gap:16px;align-items:start;padding:16px 0;cursor:pointer;transition:opacity .5s var(--ease)}
+.check+.check{border-top:1px dotted rgba(132,24,26,.24)}
+.check input{appearance:none;-webkit-appearance:none;width:26px;height:26px;margin-top:1px;border-radius:8px;background:var(--wall);box-shadow:inset 0 0 0 1.5px rgba(132,24,26,.4);cursor:pointer;display:grid;place-items:center;transition:background-color .4s var(--ease),box-shadow .4s var(--ease)}
+.check input::after{content:"";width:12px;height:7px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:translateY(-2px) rotate(-45deg) scale(0);transition:transform .45s var(--ease)}
+.check input:checked{background:var(--pipe);box-shadow:none}
+.check input:checked::after{transform:translateY(-2px) rotate(-45deg) scale(1)}
+.check input:focus-visible{outline:2px solid var(--wine);outline-offset:3px}
+.check .flav{font-size:17px;font-weight:500;color:var(--ink);transition:color .4s}
+.check .msg{margin-top:4px;font-size:15px;color:var(--wine)}
+.check .msg.none{color:var(--graph);font-style:italic;font-size:14px}
+.check .who{margin-top:4px;font-size:13.5px;color:var(--graph)}
+.check .when{text-align:right;font-size:14.5px}
+.check .when small{display:block;font-size:13px;color:var(--graph)}
+.check.done{opacity:.55}
+.check.done .flav,.check.done .msg{text-decoration:line-through;text-decoration-color:rgba(132,24,26,.5)}
+
+/* financials: read like a bank statement, three lines and the money on the right */
+.statement{margin-top:30px;border-top:1px solid rgba(132,24,26,.16)}
+.sline{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:baseline;padding:20px 0;border-bottom:1px solid rgba(132,24,26,.16)}
+.sline b{display:block;font-weight:500;font-size:17px}
+.sline span{display:block;font-size:13.5px;color:var(--graph);margin-top:2px}
+.sline .amt{font-family:var(--hf);font-weight:500;font-size:clamp(34px,4vw,46px);line-height:1;color:var(--wine);font-variant-numeric:lining-nums tabular-nums}
+.sline.due .amt{color:var(--pipe)}
+.bar3{display:flex;height:8px;border-radius:9px;overflow:hidden;background:var(--sugar);margin-top:18px}
+.bar3 i{display:block;height:100%;transition:width 1s var(--ease)}
+.bar3 i.in{background:var(--wine)}.bar3 i.dep{background:#C26A6C}
+.bar3key{display:flex;gap:18px;margin-top:8px;font-size:12.5px;color:var(--graph);flex-wrap:wrap}
+.bar3key span{display:inline-flex;align-items:center;gap:6px}.bar3key i{width:9px;height:9px;border-radius:3px;background:var(--sugar)}
+.bar3key i.in{background:var(--wine)}.bar3key i.dep{background:#C26A6C}
+.mrow{display:grid;grid-template-columns:96px 1fr 150px 90px;gap:16px;align-items:center;padding:13px 0;border-top:1px dotted rgba(132,24,26,.24);cursor:pointer}
+.mrow:first-child{border-top:1px solid rgba(132,24,26,.16)}
+.mrow .dt{font-size:14px;color:var(--graph)}
+.mrow .nm b{display:block;font-weight:500;font-size:15.5px}
+.mrow .nm span{display:block;font-size:13px;color:var(--graph);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow .st{font-size:13.5px;color:var(--graph)}
+.mrow .st.due{color:var(--pipe)}.mrow .st.full{color:#3E6B48}
+.mrow .amt{text-align:right;font-size:16px;font-variant-numeric:tabular-nums}
+.mrow.muted .amt{color:var(--graph);text-decoration:line-through}
+
+/* customer message preview: what goes out when a cake is ready or picked up */
+.nscrim{position:fixed;inset:0;z-index:40;background:rgba(42,27,34,.32);display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .45s var(--ease)}
+.nscrim.on{opacity:1;pointer-events:auto}
+.note-card{width:min(420px,100%);background:var(--wall);border-radius:18px;padding:22px 22px 20px;box-shadow:0 40px 80px -40px rgba(42,27,34,.6);transform:translateY(18px) scale(.97);transition:transform .7s var(--ease)}
+.nscrim.on .note-card{transform:none}
+.note-card h3{font-size:24px;color:var(--wine);line-height:1.1}
+.note-card .via{font-size:13px;color:var(--graph);margin-top:4px}
+.phone{margin-top:16px;background:#F4F1F0;border-radius:14px;padding:16px 14px 18px}
+.phone .to{font-size:12px;color:var(--graph);text-align:center;margin-bottom:12px}
+.bubble{max-width:88%;background:#E9E5E4;color:#1d1b1b;border-radius:18px 18px 18px 6px;padding:10px 14px;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;font-size:14.5px;line-height:1.4;opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease) .25s,transform .6s var(--ease) .25s}
+.nscrim.on .bubble{opacity:1;transform:none}
+.mail{margin-top:16px;border-radius:12px;background:#F7F5F4;padding:14px 16px;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.5;color:#1d1b1b}
+.mail dl{display:grid;grid-template-columns:58px 1fr;gap:2px 8px;font-size:12.5px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #e6e1df}
+.mail dt{color:#8a8380}.mail p+p{margin-top:8px}
+.note-card .acts{display:flex;align-items:center;justify-content:flex-end;gap:18px;margin-top:18px}
+.note-card .fine{font-size:12px;color:var(--graph);margin-top:12px}
 
 /* range filter */
 .seg{display:flex;gap:2px}
@@ -214,7 +273,9 @@ details.done-list .row{opacity:.7;border-top:1px dotted rgba(132,24,26,.24)}
   .row .nm{grid-column:2;grid-row:1}.row .time{grid-column:2;grid-row:2;font-size:13px}.row .time small{display:inline;margin-left:6px}
   .row .money{grid-column:3;grid-row:1;text-align:right}.row .act{grid-column:2 / span 2;grid-row:3;justify-self:start}
 }
-@media (max-width:560px){.top{grid-template-columns:auto 1fr}.top .today{display:none}.tabs{justify-self:end}
+.pday{}
+@media (max-width:560px){.mrow{grid-template-columns:1fr auto;row-gap:2px}.mrow .dt{grid-column:1}.mrow .nm{grid-column:1}.mrow .st{grid-column:1}.mrow .amt{grid-column:2;grid-row:1 / span 3}.tabs{gap:14px}.tabs button{font-size:13.5px}.top .logo{width:80px;height:80px;margin:-12px 0 -16px -20px}.pday{grid-template-columns:58px 1fr}.pday .stamp b{font-size:30px}.check{grid-template-columns:30px 1fr}.check .when{grid-column:2;text-align:left}.check .when small{display:inline;margin-left:6px}.tabs{gap:20px}
+.top{grid-template-columns:auto 1fr}.top .today{display:none}.tabs{justify-self:end}
   .slip-in{grid-template-columns:96px 1fr;padding-right:16px}.script{font-size:28px}.key{flex-wrap:wrap}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -225,6 +286,8 @@ details.done-list .row{opacity:.7;border-top:1px dotted rgba(132,24,26,.24)}
     <img class="logo" src="photos/logo.png" alt="CakeCanvas.co">
     <nav class="tabs" aria-label="Dashboard">
       <button type="button" data-tab="orders" class="on">Orders<span class="badge" id="badge" hidden></span></button>
+      <button type="button" data-tab="prep">Bake prep</button>
+      <button type="button" data-tab="money">Financials</button>
       <button type="button" data-tab="prices">Prices</button>
       <i class="bar" aria-hidden="true"></i>
     </nav>
@@ -246,6 +309,18 @@ details.done-list .row{opacity:.7;border-top:1px dotted rgba(132,24,26,.24)}
         <div id="upcoming"></div>
       </section>
       <details class="done-list" id="doneList"><summary><h2>Picked up</h2><span id="doneCount"></span></summary><div id="done"></div></details>
+    </div>
+
+    <div class="view" id="v-prep">
+      <div class="hello"><h1>Bake prep</h1><p id="prepSub"></p></div>
+      <div id="prep" style="margin-top:34px"></div>
+    </div>
+
+    <div class="view" id="v-money">
+      <div class="bhead" style="margin-bottom:0"><div class="hello"><h1>Financials</h1><p>Requests that aren't confirmed yet aren't counted.</p></div>
+        <div class="seg" id="mrange"><button type="button" data-m="month" class="on">This month</button><button type="button" data-m="all">All time</button></div></div>
+      <div class="statement" id="statement"></div>
+      <section class="block"><div class="bhead"><h2>Recent orders<span class="count">Newest first.</span></h2></div><div id="recent"></div></section>
     </div>
 
     <div class="view" id="v-prices">
@@ -270,6 +345,7 @@ details.done-list .row{opacity:.7;border-top:1px dotted rgba(132,24,26,.24)}
 <aside class="drawer" id="drawer" aria-label="Order details"></aside>
 <div class="savebar" id="savebar"><span>Unsaved price changes</span><button type="button" class="undo" id="undo">Undo</button><button type="button" class="btn" id="saveBtn">Save prices</button></div>
 <div class="toast" id="toast"></div>
+<div class="nscrim" id="nscrim"><div class="note-card" id="noteCard" role="dialog" aria-modal="true" aria-labelledby="noteTitle"></div></div>
 
 <script src="cake.js"></script>
 <script>
@@ -294,7 +370,7 @@ const tabs=[...document.querySelectorAll(".tabs button")],bar=document.querySele
 function placeBar(b){bar.style.width=b.offsetWidth+"px";bar.style.transform=`translateX(${b.offsetLeft}px)`}
 tabs.forEach(b=>b.onclick=()=>{tabs.forEach(x=>x.classList.toggle("on",x===b));placeBar(b);
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("on",v.id==="v-"+b.dataset.tab));
-  if(b.dataset.tab==="orders")renderOrders(true);else renderPrices(true);
+  if(b.dataset.tab==="orders")renderOrders(true);else if(b.dataset.tab==="prep")renderPrep(true);else if(b.dataset.tab==="money")renderMoney(true);else renderPrices(true);
   dirty();history.replaceState(null,"","#"+b.dataset.tab)});
 addEventListener("resize",()=>placeBar(document.querySelector(".tabs button.on")));
 
@@ -369,14 +445,14 @@ document.addEventListener("click",e=>{
     if(act==="confirm"){leave(card,()=>{o.status="Confirmed";save();renderOrders(false);toast(`Confirmed. ${o.name.split(" ")[0]} gets the deposit link.`)})}
     if(act==="decline"){leave(card,()=>{o.status="Declined";save();renderOrders(false);toast("Request declined.")})}
     if(act==="next"){const to=NEXTS[o.status];
-      if(to==="Collected"){leave(card,()=>{o.status=to;save();renderOrders(false);toast(`${o.name.split(" ")[0]}'s cake is picked up.`)})}
+      if(to==="Collected"){leave(card,()=>{o.status=to;save();renderOrders(false);notify(o,"Collected")})}
       else{o.status=to;save();const st=card.querySelector(".stage");st.className="stage s-"+to;st.lastChild.textContent=SHOW[to];
         b.textContent=NEXT[to];
-        if(to==="Ready")toast(`Ready. Let ${o.name.split(" ")[0]} know it's waiting.`)}}
+        if(to==="Ready")notify(o,"Ready")}}
     if(act==="paid"){o.paid=!o.paid;save();b.classList.toggle("on",o.paid);renderUpcoming(false)}
-    if(act==="stage"){o.status=b.dataset.s;save();openDrawer(o.code,true);renderOrders(false)}
+    if(act==="stage"){const was=o.status;o.status=b.dataset.s;save();openDrawer(o.code,true);renderOrders(false);if(was!==o.status&&["Ready","Collected"].includes(o.status))notify(o,o.status)}
     return}
-  const row=e.target.closest(".row,.slip");
+  const row=e.target.closest(".row,.slip,.mrow");
   if(row&&!e.target.closest("a"))openDrawer(row.dataset.c);
 });
 
@@ -468,15 +544,96 @@ $("saveBtn").onclick=()=>{saved=snapshot();const s=JSON.parse(saved);
 $("undo").onclick=()=>{const s=savedObj();Object.assign(SIZEP,s.size);Object.assign(FINP,s.finish);Object.assign(DECP,s.decor);Object.assign(SHAPEP,s.shape);Object.assign(EXTRA,s.extra);
   WEEK.perDay=s.week.perDay;WEEK.closed=s.week.closed;renderPrices(false)};
 
+/* ---------- bake prep ---------- */
+function renderPrep(enter){
+  const list=orders.filter(o=>STAGE.slice(0,3).includes(o.status)&&dOf(o)>=today).sort((a,b)=>(a.date+a.slot).localeCompare(b.date+b.slot));
+  const done=list.filter(o=>o.prepped).length;
+  $("prepSub").textContent=list.length?`${done} of ${list.length} cakes done. Tick each one off once it's baked and finished.`:"No cakes coming up yet.";
+  if(!list.length){$("prep").innerHTML=`<div class="empty">Confirmed orders show up here to bake.</div>`;return}
+  const days={};list.forEach(o=>(days[o.date]=days[o.date]||[]).push(o));let i=0;
+  $("prep").innerHTML=Object.entries(days).map(([k,os])=>{const d=new Date(k+"T00:00"),n=dayName(d);
+    return `<div class="pday ${enter?"enter":""}" style="--i:${i}"><div class="stamp"><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-US",{weekday:"short",month:"short"})}</span>${["Today","Tomorrow"].includes(n)?`<em>${n}</em>`:""}</div><div>
+      ${os.map(o=>{i++;const sl=lab("slot",o.slot);return `<label class="check ${o.prepped?"done":""}" data-p="${o.code}">
+        <input type="checkbox" ${o.prepped?"checked":""} aria-label="Done: ${esc(o.name)}'s cake">
+        <div><div class="flav">${esc(o.cfg.flavour)} with ${esc(o.cfg.filling.toLowerCase())}</div>
+          <div class="msg ${o.cfg.msg?"":"none"}">${o.cfg.msg?"&ldquo;"+esc(o.cfg.msg)+"&rdquo;":"No message on top"}</div>
+          <div class="who">${esc(o.name)}, ${esc(short(o.cfg))}</div></div>
+        <div class="when">${d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}<small>${sl.split(" to ")[0]} ${sl.match(/am|pm/)[0]} ${o.cfg.handoff==="delivery"?"delivery":"pickup"}</small></div>
+      </label>`}).join("")}</div></div>`}).join("");
+}
+$("prep").addEventListener("change",e=>{const row=e.target.closest(".check");if(!row)return;const o=find(row.dataset.p);
+  o.prepped=e.target.checked;save();row.classList.toggle("done",o.prepped);
+  const list=orders.filter(x=>STAGE.slice(0,3).includes(x.status)&&dOf(x)>=today);
+  $("prepSub").textContent=`${list.filter(x=>x.prepped).length} of ${list.length} cakes done. Tick each one off once it's baked and finished.`});
+
+/* ---------- customer message preview ---------- */
+function messageFor(o,to){
+  const first=o.name.split(" ")[0],d=dOf(o),when=`${d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})}, ${lab("slot",o.slot)}`;
+  const bal=o.price-Math.round(o.price/2),deliv=o.cfg.handoff==="delivery";
+  if(to==="Ready")return{title:"Cake is ready",subject:`Your cake is ready, ${first}`,
+    body:[`Hi ${first}! Your cake is finished and ready 🎂`,
+      deliv?`We'll drop it off ${when}.`:`Pickup is ${when} in Rancho Cordova. Reply here if you need a different time.`,
+      `${o.paid?`Balance due at ${deliv?"drop off":"pickup"}: ${money(bal)}.`:`Total due: ${money(o.price)}.`} Order ${o.code}.`,
+      `Kamaljeet, CakeCanvas.co`]};
+  return{title:"Thank you message",subject:`Thank you, ${first}`,
+    body:[`Thanks for picking up your cake, ${first}! Hope everyone loves it 💕`,
+      `If you share a photo, tag @cakecanvas.co so we can see it.`,`Kamaljeet, CakeCanvas.co`]};
+}
+function notify(o,to){
+  const m=messageFor(o,to),mail=o.contact.includes("@");
+  $("noteCard").innerHTML=`<h3 id="noteTitle">${m.title} for ${esc(o.name.split(" ")[0])}</h3>
+    <div class="via">This ${mail?"email":"text"} goes out to ${esc(o.contact)} when you mark the cake ${to==="Ready"?"ready":"picked up"}.</div>
+    ${mail?`<div class="mail"><dl><dt>From</dt><dd>CakeCanvas.co</dd><dt>To</dt><dd>${esc(o.contact)}</dd><dt>Subject</dt><dd>${esc(m.subject)}</dd></dl>${m.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`
+      :`<div class="phone"><div class="to">Text to ${esc(o.contact)}</div><div class="bubble">${m.body.map(esc).join("<br><br>")}</div></div>`}
+    <div class="acts"><button type="button" class="lnk" id="noteSkip">Don't send</button><button type="button" class="btn" id="noteSend">Send ${mail?"email":"text"}</button></div>
+    <div class="fine">Demo preview. Nothing is actually sent.</div>`;
+  $("nscrim").classList.add("on");setTimeout(()=>$("noteSend").focus(),50);
+  const close=t=>{$("nscrim").classList.remove("on");if(t)toast(t)};
+  $("noteSend").onclick=()=>close(`${mail?"Email":"Text"} sent to ${o.name.split(" ")[0]}.`);
+  $("noteSkip").onclick=()=>close(to==="Ready"?"Marked ready, no message sent.":"Marked picked up, no message sent.");
+  $("nscrim").onclick=e=>{if(e.target.id==="nscrim")close()};
+}
+addEventListener("keydown",e=>{if(e.key==="Escape")$("nscrim").classList.remove("on")});
+
+/* ---------- financials ---------- */
+let mr="month";
+$("mrange").onclick=e=>{const b=e.target.closest("button");if(!b)return;mr=b.dataset.m;[...$("mrange").children].forEach(x=>x.classList.toggle("on",x===b));renderMoney(false)};
+const SOLD=["Confirmed","Baking","Ready","Collected"];
+const depOf=o=>Math.round(o.price/2);
+const received=o=>o.status==="Collected"?o.price:(o.paid?depOf(o):0);
+function renderMoney(enter){
+  const inRange=o=>mr==="all"||(dOf(o).getMonth()===today.getMonth()&&dOf(o).getFullYear()===today.getFullYear());
+  const sold=orders.filter(o=>SOLD.includes(o.status)&&inRange(o));
+  const total=sold.reduce((a,o)=>a+o.price,0);
+  const deps=sold.filter(o=>o.paid||o.status==="Collected").reduce((a,o)=>a+depOf(o),0);
+  const inHand=sold.reduce((a,o)=>a+received(o),0);
+  const due=total-inHand;
+  const unpaid=sold.filter(o=>o.status!=="Collected"&&!o.paid).length;
+  const pct=x=>total?(x/total*100).toFixed(1)+"%":"0%";
+  const span=mr==="month"?"pickups in "+today.toLocaleDateString("en-US",{month:"long"}):"every confirmed order";
+  $("statement").innerHTML=`
+    <div class="sline ${enter?"enter":""}" style="--i:0"><div><b>Cake sales</b><span>${sold.length} cake${sold.length===1?"":"s"}, ${span}</span></div><div class="amt" id="mTotal"></div></div>
+    <div class="sline ${enter?"enter":""}" style="--i:1"><div><b>Deposits collected</b><span>The half paid up front to hold the date</span></div><div class="amt" id="mDeps"></div></div>
+    <div class="sline due ${enter?"enter":""}" style="--i:2"><div><b>Balances still due</b><span>Paid at pickup${unpaid?`, plus ${unpaid} deposit${unpaid>1?"s":""} not in yet`:""}</span></div><div class="amt" id="mDue"></div></div>
+    <div class="bar3"><i class="in" style="width:${pct(inHand-deps)}"></i><i class="dep" style="width:${pct(deps)}"></i></div>
+    <div class="bar3key"><span><i class="in"></i>Paid at pickup ${money(inHand-deps)}</span><span><i class="dep"></i>Deposits ${money(deps)}</span><span><i></i>Still due ${money(due)}</span></div>`;
+  tweenNum($("mTotal"),total,money);tweenNum($("mDeps"),deps,money);tweenNum($("mDue"),due,money);
+  const recent=orders.filter(o=>o.status!=="Declined").sort((a,b)=>(b.created+b.code).localeCompare(a.created+a.code)).slice(0,10);
+  $("recent").innerHTML=recent.map((o,i)=>{const st=o.status==="Request"?["Not confirmed yet",""]:o.status==="Collected"?["Paid in full","full"]:o.paid?[`${money(o.price-depOf(o))} due at pickup`,""]:["Deposit not in","due"];
+    return `<div class="mrow ${o.status==="Request"?"muted":""} ${enter?"enter":""}" style="--i:${i}" data-c="${o.code}"><div class="dt">${new Date(o.created+"T00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>
+      <div class="nm"><b>${esc(o.name)}</b><span>${esc(short(o.cfg))}, pickup ${dOf(o).toLocaleDateString("en-US",{month:"short",day:"numeric"})}</span></div>
+      <div class="st ${st[1]}">${st[0]}</div><div class="amt">${money(o.price)}</div></div>`}).join("")||`<div class="empty">No orders yet.</div>`;
+}
+
 /* ---------- live: a request placed on the site in another tab shows up here ---------- */
 addEventListener("storage",e=>{if(e.key!=="cc_orders")return;const before=orders.length;orders=store.get("cc_orders",orders);
   if(orders.length>before){const o=orders[orders.length-1];toast(`New request from ${o.name.split(" ")[0]}.`)}
-  renderOrders(false)});
+  renderOrders(false);renderPrep(false);renderMoney(false)});
 $("reset").onclick=()=>{orders=seedOrders();save();renderOrders(true);toast("Sample orders restored.")};
 
 /* ---------- start ---------- */
 $("today").textContent=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
-const start=location.hash==="#prices"?1:0;
+const start={"#prep":1,"#money":2,"#prices":3}[location.hash]||0;
 tabs[start].click();requestAnimationFrame(()=>placeBar(tabs[start]));
 </script>
 </body>

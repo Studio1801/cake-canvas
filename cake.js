@@ -37,15 +37,15 @@ const fmt=d=>d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"nu
 const money=n=>"$"+n.toLocaleString("en-US");
 
 function seedOrders(){
-  const mk=(code,name,dd,status,c)=>({code,name,contact:name.split(" ")[0].toLowerCase()+"@mail.com",date:key(addDays(today,dd)),created:key(addDays(today,dd-9)),status,cfg:Object.assign({},cfg,c,{decor:c.decor||[]}),notes:""});
+  const mk=(code,name,dd,status,c)=>({code,name,contact:(+code.slice(-1))%2?"(916) 555-01"+code.slice(-2):name.split(" ")[0].toLowerCase()+"@mail.com",date:key(addDays(today,dd)),created:key(addDays(today,dd-9)),status,cfg:Object.assign({},cfg,c,{decor:c.decor||[]}),notes:""});
   const o=[
    mk("CC-0136","Priya S.",-2,"Collected",{tiers:1,size:6,shape:"heart",paint:"blush",finish:"vintage",decor:["cherries"],msg:"Love you Mom"}),
    mk("CC-0137","Daniel R.",-1,"Collected",{tiers:2,size:8,paint:"cocoa",finish:"smooth",decor:["gold"],flavour:"Chocolate fudge"}),
-   mk("CC-0138","Alyssa M.",1,"Ready",{tiers:1,size:8,paint:"sage",finish:"knife",decor:["flowers"]}),
-   mk("CC-0139","Jordan T.",2,"Baking",{tiers:3,size:10,paint:"ivory",finish:"ruffles",decor:["flowers"],occasion:"wedding"}),
-   mk("CC-0141","Mara L.",3,"Baking",{tiers:2,size:8,paint:"lilac",finish:"vintage",decor:["bows"],msg:"Happy 30th Mara"}),
-   mk("CC-0142","Kenji W.",6,"Confirmed",{tiers:1,size:6,paint:"sky",finish:"smooth",decor:["bows"],occasion:"baby",msg:"Oh baby"}),
-   mk("CC-0144","Sofia G.",9,"Request",{tiers:2,size:6,shape:"square",paint:"butter",finish:"knife",decor:["flowers","gold"]})];
+   mk("CC-0138","Alyssa M.",1,"Ready",{tiers:1,size:8,paint:"sage",finish:"knife",decor:["flowers"],flavour:"Lemon",filling:"Raspberry"}),
+   mk("CC-0139","Jordan T.",2,"Baking",{tiers:3,size:10,paint:"ivory",finish:"ruffles",decor:["flowers"],occasion:"wedding",msg:"Jordan & Priya",flavour:"Vanilla bean",filling:"Cream cheese"}),
+   mk("CC-0141","Mara L.",3,"Baking",{tiers:2,size:8,paint:"lilac",finish:"vintage",decor:["bows"],msg:"Happy 30th Mara",flavour:"Ube",filling:"Salted caramel"}),
+   mk("CC-0142","Kenji W.",6,"Confirmed",{tiers:1,size:6,paint:"sky",finish:"smooth",decor:["bows"],occasion:"baby",msg:"Oh baby",flavour:"Red velvet",filling:"Cream cheese"}),
+   mk("CC-0144","Sofia G.",9,"Request",{tiers:2,size:6,shape:"square",paint:"butter",finish:"knife",decor:["flowers","gold"],flavour:"Earl grey",filling:"Lemon curd"})];
   o.forEach(x=>{x.price=priceOf(x.cfg).total;x.slot=x.cfg.slot;x.paid=["Baking","Ready","Collected"].includes(x.status)});
   return o;
 }
