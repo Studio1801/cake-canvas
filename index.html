@@ -422,7 +422,7 @@ tr.click:hover td{background:var(--wall)}
 <footer>
   <div><a class="mark" href="#top" aria-label="CakeCanvas.co, back to top"><img src="photos/logo.png" alt="CakeCanvas.co" width="180" height="180"></a><p class="muted" style="max-width:36ch">Custom cakes, cookies and celebration pieces. Rancho Cordova, California. Pickup by appointment.</p></div>
   <div><span class="micro">Visit</span><div style="margin-top:12px"><a href="#works">Works</a><a href="#commission">Commission</a><a href="#track">Track an order</a></div></div>
-  <div><span class="micro">Studio</span><div style="margin-top:12px"><a href="#studio">Owner ledger</a><a href="#terms">Terms of service</a><a href="#privacy">Privacy policy</a></div></div>
+  <div><span class="micro">Studio</span><div style="margin-top:12px"><a href="studio.html">Owner dashboard</a><a href="#terms">Terms of service</a><a href="#privacy">Privacy policy</a></div></div>
   <div class="credit"><span>&copy; 2026 CakeCanvas.co. Concept preview. Prices and orders are samples.</span><span>Site concept by Studio 1801</span></div>
 </footer>
 
@@ -477,180 +477,12 @@ tr.click:hover td{background:var(--wall)}
   </article>
 </div>
 
+<script src="cake.js"></script>
 <script>
 /* ---------- photos ----------
    Drop the shop's own photos into /photos with these names. Any missing file falls back to the drawing. */
 const PHOTOS={works:["photos/work-1.jpg","photos/work-2.jpg","photos/work-3.jpg","photos/work-4.jpg","photos/work-5.jpg","photos/work-6.jpg","photos/work-7.jpg"],scatter:["photos/extra-1.jpg","photos/extra-2.jpg","photos/extra-3.jpg","photos/extra-4.jpg"]};
 function tryPhoto(el,src,alt,onOk){if(!el||!src)return;const im=new Image();im.onload=()=>{el.innerHTML=`<img class="ph" src="${src}" alt="${alt}">`;if(onOk)onOk()};im.src=src}
-/* ---------- data ---------- */
-const PAINTS=[
- {id:"blush",name:"Blush",c:"#F3C9D1"},{id:"ivory",name:"Ivory",c:"#F7F1E6"},{id:"butter",name:"Butter",c:"#F3E3B3"},
- {id:"sage",name:"Sage",c:"#C9D6BE"},{id:"sky",name:"Powder blue",c:"#C8D9E8"},{id:"lilac",name:"Lilac",c:"#DCCFE6"},
- {id:"cocoa",name:"Cocoa",c:"#6B4636"}];
-const OPT={
- occasion:[["birthday","Birthday"],["wedding","Wedding"],["baby","Baby shower"],["anniv","Anniversary"],["justbc","Just because"]],
- shape:[["round","Round"],["heart","Heart"],["square","Square"]],
- tiers:[[1,"One"],[2,"Two"],[3,"Three"]],
- size:[[6,"6 in"],[8,"8 in"],[10,"10 in"]],
- finish:[["smooth","Smooth"],["ruffles","Ruffles"],["vintage","Vintage piping"],["knife","Palette knife"]],
- decor:[["flowers","Fresh flowers"],["cherries","Cherries"],["gold","Gold leaf"],["bows","Bows"]],
- slot:[["10","10 to 11 am"],["13","1 to 2 pm"],["16","4 to 5 pm"]],
- handoff:[["pickup","Pickup"],["delivery","Delivery, +$20"]]
-};
-const FLAVOURS=["Vanilla bean","Chocolate fudge","Red velvet","Lemon","Ube","Earl grey"];
-const FILLINGS=["Strawberry","Raspberry","Salted caramel","Cream cheese","Lemon curd","Oreo crumble"];
-const SIZEP={4:40,6:65,8:95,10:140}, SERVES={4:6,6:12,8:24,10:38};
-const FINP={smooth:0,ruffles:20,vintage:30,knife:25}, DECP={flowers:25,cherries:12,gold:18,bows:10};
-
-let cfg={occasion:"birthday",shape:"round",tiers:2,size:8,flavour:"Vanilla bean",filling:"Strawberry",finish:"ruffles",paint:"blush",decor:["flowers"],msg:"",slot:"13",handoff:"pickup",date:null};
-
-/* ---------- storage (best effort) ---------- */
-const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-
-const today=new Date();today.setHours(0,0,0,0);
-const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
-const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-const fmt=d=>d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-const money=n=>"$"+n.toLocaleString("en-US");
-
-function seedOrders(){
-  const mk=(code,name,dd,status,c)=>({code,name,contact:name.split(" ")[0].toLowerCase()+"@mail.com",date:key(addDays(today,dd)),created:key(addDays(today,dd-9)),status,cfg:Object.assign({},cfg,c,{decor:c.decor||[]}),notes:""});
-  const o=[
-   mk("CC-0136","Priya S.",-2,"Collected",{tiers:1,size:6,shape:"heart",paint:"blush",finish:"vintage",decor:["cherries"],msg:"Love you Mom"}),
-   mk("CC-0137","Daniel R.",-1,"Collected",{tiers:2,size:8,paint:"cocoa",finish:"smooth",decor:["gold"],flavour:"Chocolate fudge"}),
-   mk("CC-0138","Alyssa M.",1,"Ready",{tiers:1,size:8,paint:"sage",finish:"knife",decor:["flowers"]}),
-   mk("CC-0139","Jordan T.",2,"Baking",{tiers:3,size:10,paint:"ivory",finish:"ruffles",decor:["flowers"],occasion:"wedding"}),
-   mk("CC-0141","Mara L.",3,"Baking",{tiers:2,size:8,paint:"lilac",finish:"vintage",decor:["bows"],msg:"Happy 30th Mara"}),
-   mk("CC-0142","Kenji W.",6,"Confirmed",{tiers:1,size:6,paint:"sky",finish:"smooth",decor:["bows"],occasion:"baby",msg:"Oh baby"}),
-   mk("CC-0144","Sofia G.",9,"Request",{tiers:2,size:6,shape:"square",paint:"butter",finish:"knife",decor:["flowers","gold"]})];
-  o.forEach(x=>{x.price=priceOf(x.cfg).total;x.slot=x.cfg.slot});
-  return o;
-}
-let orders=store.get("cc_orders",null)||seedOrders();
-let cap=store.get("cc_cap",{});   // key -> {slots:n, closed:bool}
-const save=()=>{store.set("cc_orders",orders);store.set("cc_cap",cap)};
-
-function dayCap(d){const k=key(d);const c=cap[k];if(c)return c;return {slots:4,closed:d.getDay()===1}}
-function booked(d){const k=key(d);let n=orders.filter(o=>o.date===k&&o.status!=="Collected").length;
-  const h=(d.getDate()*7+d.getMonth()*3)%5; if(d>addDays(today,3)) n+= (h===0?4:h===1?3:h===2?1:0); return n}
-function openSlots(d){const c=dayCap(d);if(c.closed)return 0;return Math.max(0,c.slots-booked(d))}
-
-/* ---------- price ---------- */
-function tierSizes(c){const s=[];let cur=+c.size;for(let i=0;i<c.tiers;i++){s.push(Math.max(4,cur));cur-=2}return s}
-function priceOf(c){
-  const sizes=tierSizes(c);let total=sizes.reduce((a,s)=>a+SIZEP[s],0);
-  total+=FINP[c.finish]||0; (c.decor||[]).forEach(d=>total+=DECP[d]||0);
-  if(c.shape==="heart")total+=15; if(c.shape==="square")total+=10; if(c.handoff==="delivery")total+=20;
-  const serves=sizes.reduce((a,s)=>a+SERVES[s],0);
-  return {total,serves,deposit:Math.round(total/2)};
-}
-
-/* ---------- cake drawing (SVG) ---------- */
-function shade(hex,p){let n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;
-  const f=p<0?0:255,t=Math.abs(p);r=Math.round((f-r)*t+r);g=Math.round((f-g)*t+g);b=Math.round((f-b)*t+b);
-  return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}
-function shapePts(shape,cx,cy,w,ry){const p=[];
-  if(shape==="round"){for(let i=0;i<64;i++){const a=i/64*Math.PI*2;p.push([cx+w/2*Math.cos(a),cy+ry*Math.sin(a)])}}
-  else if(shape==="square"){const q=[[cx-w/2,cy],[cx,cy-ry],[cx+w/2,cy],[cx,cy+ry]];
-    for(let s=0;s<4;s++){const A=q[s],B=q[(s+1)%4];for(let i=0;i<16;i++){const t=i/16;p.push([A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t])}}}
-  else{for(let i=0;i<64;i++){const t=i/64*Math.PI*2;const x=16*Math.pow(Math.sin(t),3);const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
-    p.push([cx+x*(w/33),cy-(y+2)*(ry/14)])}}
-  return p}
-const pd=(pts,dy=0)=>"M"+pts.map(p=>p[0].toFixed(1)+","+(p[1]+dy).toFixed(1)).join("L")+"Z";
-function rnd(seed){let s=seed;return()=>{s=(s*9301+49297)%233280;return s/233280}}
-
-function drawCake(c,opts={}){
-  const paint=(PAINTS.find(p=>p.id===c.paint)||PAINTS[0]).c;
-  const side=shade(paint,-0.1), top=shade(paint,0.25), pipe=c.paint==="cocoa"?"#F7F1E6":shade(paint,-0.32);
-  const sizes=tierSizes(c);const H=c.tiers===3?58:66;
-  const R=rnd(c.tiers*31+sizes[0]*7+c.finish.length*13);
-  let s=`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of the cake">`;
-  const u="ck"+(drawCake.n=(drawCake.n||0)+1);
-  s+=`<defs><filter id="${u}b" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="7"/></filter>
-    <filter id="${u}c" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="2.6"/></filter>
-    <radialGradient id="${u}p" cx="45%" cy="35%" r="70%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".75" stop-color="#F8F4F2"/><stop offset="1" stop-color="#EAE3E0"/></radialGradient>
-    <filter id="${u}g" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7" result="n"/>
-      <feColorMatrix in="n" type="matrix" values="0 0 0 0 .16  0 0 0 0 .1  0 0 0 0 .13  .3 0 0 0 -.1" result="na"/>
-      <feComposite in="na" in2="SourceAlpha" operator="in" result="gr"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="gr"/></feMerge></filter>
-    <linearGradient id="${u}st" x1="0" x2="1"><stop offset="0" stop-color="#DCD3CF"/><stop offset=".35" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#F4EFED"/><stop offset="1" stop-color="#CFC5C1"/></linearGradient>
-    <radialGradient id="${u}t" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="${shade(paint,0.45)}"/><stop offset=".65" stop-color="${top}"/><stop offset="1" stop-color="${shade(paint,0.1)}"/></radialGradient></defs>`;
-  const w0=tierSizes(c)[0]*24;
-  s+=`<ellipse cx="200" cy="384" rx="92" ry="9" fill="#2A1B22" opacity=".12" filter="url(#${u}c)"/>`;
-  s+=`<ellipse cx="200" cy="381" rx="66" ry="10" fill="#D8CFCB"/><ellipse cx="200" cy="378" rx="66" ry="10" fill="url(#${u}st)" stroke="#000" stroke-opacity=".12"/>`;
-  s+=`<path d="M178,349 C186,356 190,362 189,372 L211,372 C210,362 214,356 222,349 Z" fill="url(#${u}st)" stroke="#000" stroke-opacity=".12"/>`;
-  s+=`<ellipse cx="200" cy="372" rx="16" ry="3.5" fill="url(#${u}st)" stroke="#000" stroke-opacity=".1"/>`;
-  s+=`<g transform="translate(0,-26)">`;
-  s+=`<ellipse cx="200" cy="357" rx="168" ry="21" fill="#2A1B22" opacity=".07" filter="url(#${u}c)"/>`;
-  s+=`<ellipse cx="200" cy="355" rx="170" ry="22" fill="#E4DCD8"/>`;
-  s+=`<ellipse cx="200" cy="352" rx="170" ry="22" fill="url(#${u}p)" stroke="#000" stroke-opacity=".16" stroke-width="1"/>`;
-  s+=`<ellipse cx="200" cy="349" rx="150" ry="16" fill="none" stroke="#000" stroke-opacity=".08" stroke-width="1"/>`;
-  s+=`<path d="M58,345 Q200,328 342,345" fill="none" stroke="#FFFFFF" stroke-width="2" opacity=".9"/>`;
-  s+=`<ellipse cx="200" cy="348" rx="${w0*.56}" ry="${w0*.11}" fill="#2A1B22" opacity=".22" filter="url(#${u}b)"/>`;
-  s+=`<ellipse cx="200" cy="352" rx="170" ry="22" fill="none" stroke="#C9A24A" stroke-width="1.2" opacity=".55"/>`;
-  s+=`<g filter="url(#${u}g)">`;
-  let base=344, topInfo=null;
-  sizes.forEach((sz,i)=>{
-    const w=sz*24+(sz===4?10:0), ry=w*.15, topY=base-H;
-    const pts=shapePts(c.shape,200,0,w,ry);
-    if(i>0)s+=`<ellipse cx="200" cy="${base+ry*.25}" rx="${w*.52}" ry="${ry*1.05}" fill="#2A1B22" opacity=".2" filter="url(#${u}c)"/>`;
-    s+=`<defs><linearGradient id="${u}s${i}" gradientUnits="userSpaceOnUse" x1="${200-w/2}" x2="${200+w/2}" y1="0" y2="0">
-      <stop offset="0" stop-color="${shade(paint,-0.3)}"/><stop offset=".16" stop-color="${shade(paint,-0.12)}"/><stop offset=".36" stop-color="${shade(paint,0.1)}"/>
-      <stop offset=".55" stop-color="${side}"/><stop offset=".84" stop-color="${shade(paint,-0.17)}"/><stop offset="1" stop-color="${shade(paint,-0.34)}"/></linearGradient></defs>`;
-    s+=`<path d="${pd(pts,base)}" fill="${shade(paint,-0.22)}" stroke="#000" stroke-opacity=".22" stroke-width="1"/>`;
-    for(let y=base-1;y>topY;y-=1.5) s+=`<path d="${pd(pts,y)}" fill="url(#${u}s${i})"/>`;
-    s+=`<path d="${pd(pts,topY)}" fill="url(#${u}t)" stroke="#000" stroke-opacity=".16" stroke-width="1"/>`;
-    const front=pts.filter(p=>p[1]>=0).sort((a,b)=>a[0]-b[0]);
-    const back=pts.filter(p=>p[1]<0).sort((a,b)=>a[0]-b[0]);
-    back.forEach((p,j)=>{if(j%2===0)s+=`<circle cx="${p[0]}" cy="${p[1]+topY+1}" r="2.3" fill="${shade(paint,0.3)}" stroke="${shade(paint,-0.2)}" stroke-width=".5"/>`});
-    s+=`<path d="M${front.map(p=>p[0].toFixed(1)+","+(p[1]+topY+1.2).toFixed(1)).join("L")}" fill="none" stroke="${shade(paint,0.55)}" stroke-width="1.4" stroke-linecap="round" opacity=".75"/>`;
-    // finishes
-    if(c.finish==="ruffles"){for(let r=1;r<=5;r++){const yy=topY+r*H/6;
-      s+=`<path d="M${front.map((p,j)=>p[0].toFixed(1)+","+(p[1]+yy+Math.sin(j*1.3)*2.2).toFixed(1)).join("L")}" fill="none" stroke="${top}" stroke-width="3.2" stroke-linecap="round"/>`;
-      s+=`<path d="M${front.map((p,j)=>p[0].toFixed(1)+","+(p[1]+yy+2.6+Math.sin(j*1.3)*2.2).toFixed(1)).join("L")}" fill="none" stroke="${shade(paint,-0.2)}" stroke-width="1" stroke-opacity=".6"/>`}}
-    if(c.finish==="vintage"){let d="";for(let j=0;j<front.length-4;j+=4){const a=front[j],b=front[j+4];
-      d+=`M${a[0]},${a[1]+topY+6}Q${(a[0]+b[0])/2},${(a[1]+b[1])/2+topY+22} ${b[0]},${b[1]+topY+6}`}
-      s+=`<path d="${d}" fill="none" stroke="${pipe}" stroke-width="2.4" stroke-linecap="round"/>`;
-      front.forEach((p,j)=>{if(j%2===0)s+=`<circle cx="${p[0]}" cy="${p[1]+topY+3}" r="3.4" fill="${top}" stroke="${pipe}" stroke-width=".8"/><circle cx="${p[0]-1.1}" cy="${p[1]+topY+1.8}" r="1.2" fill="#FFFFFF" opacity=".75"/>`})}
-    if(c.finish==="knife"){const cols=[top,"#FFFFFF",shade(paint,-0.25),"#F3E3B3"];
-      for(let k=0;k<14;k++){const p=front[Math.floor(R()*front.length)];const y=p[1]+topY+8+R()*(H-14);const l=10+R()*18;
-        s+=`<path d="M${p[0]-l/2},${y}l${l},${-2-R()*4}" stroke="${cols[k%4]}" stroke-width="${4+R()*4}" stroke-linecap="round" opacity=".85"/>`}}
-    if(c.finish!=="vintage")front.forEach((p,j)=>{if(j%2===1)s+=`<circle cx="${p[0]}" cy="${p[1]+topY+1.5}" r="2.6" fill="${top}" stroke="${shade(paint,-0.25)}" stroke-width=".6"/><circle cx="${p[0]-.8}" cy="${p[1]+topY+.6}" r="1" fill="#FFFFFF" opacity=".75"/>`});
-    // bead border at base
-    front.forEach((p,j)=>{if(j%2===0){const br=c.finish==="smooth"?3.6:2.8;s+=`<circle cx="${p[0]}" cy="${p[1]+base-3}" r="${br}" fill="${top}" stroke="${shade(paint,-0.25)}" stroke-width=".7"/><circle cx="${p[0]-br*.32}" cy="${p[1]+base-3-br*.35}" r="${br*.38}" fill="#FFFFFF" opacity=".7"/>`}});
-    if(c.decor.includes("gold")){for(let k=0;k<5;k++){const p=front[Math.floor(R()*front.length)];const x=p[0],y=p[1]+topY+12+R()*(H-24);
-      s+=`<path d="M${x},${y}l${5+R()*5},${-3}l${3},${6+R()*4}l${-7},${3}z" fill="#C9A24A" opacity=".95"/>`}}
-    if(c.decor.includes("bows")){const x=200,y=ry+topY+H*.5;
-      s+=`<g fill="${pipe}"><path d="M${x},${y}c-10,-10 -18,-6 -16,0c2,6 10,5 16,0z"/><path d="M${x},${y}c10,-10 18,-6 16,0c-2,6 -10,5 -16,0z"/><path d="M${x-2},${y}l-6,14l4,-1l4,-9zM${x+2},${y}l6,14l-4,-1l-4,-9z"/><circle cx="${x}" cy="${y}" r="3"/></g>`}
-    topInfo={w,ry,topY};base=topY;
-  });
-  const t=topInfo;
-  if(c.msg){const fs=Math.min(22,t.w/Math.max(6,c.msg.length)*1.6);
-    s+=`<text x="200" y="${(t.topY+4)/0.5}" transform="scale(1,0.5)" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="${fs}" fill="${pipe}">${esc(c.msg)}</text>`}
-  if(c.decor.includes("flowers")){const fl=[[-0.28,-0.3,13,"#E8A3B4"],[-0.12,-0.55,10,"#F7F1E6"],[-0.36,0.05,9,"#F3E3B3"],[0.3,-0.4,8,"#E8A3B4"]];
-    fl.forEach(([fx,fy,r,col])=>{const x=200+fx*t.w,y=t.topY+fy*t.ry;
-      s+=`<ellipse cx="${x+r*.9}" cy="${y+r*.3}" rx="${r*.8}" ry="${r*.35}" fill="#8FA57F" transform="rotate(-20 ${x} ${y})"/>`;
-      s+=`<ellipse cx="${x+1.5}" cy="${y+r*.45}" rx="${r*1.05}" ry="${r*.5}" fill="#2A1B22" opacity=".14" filter="url(#${u}c)"/>`;
-      for(let k=0;k<6;k++){const a=k/6*Math.PI*2;s+=`<circle cx="${x+Math.cos(a)*r*.55}" cy="${y+Math.sin(a)*r*.4}" r="${r*.5}" fill="${Math.sin(a)>0?shade(col,-0.08):col}" stroke="#000" stroke-opacity=".12" stroke-width=".6"/>`}
-      for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.3;s+=`<circle cx="${x+Math.cos(a)*r*.3}" cy="${y+Math.sin(a)*r*.22-1}" r="${r*.28}" fill="${shade(col,0.25)}" opacity=".9"/>`}
-      s+=`<circle cx="${x}" cy="${y}" r="${r*.26}" fill="${shade(col,-0.35)}"/><circle cx="${x-r*.08}" cy="${y-r*.08}" r="${r*.09}" fill="#F3E3B3"/>`})}
-  if(c.decor.includes("cherries")){[-0.32,-0.1,0.14,0.34].forEach((fx,k)=>{const x=200+fx*t.w,y=t.topY-t.ry*.55+Math.abs(fx)*t.ry*.6;
-      s+=`<ellipse cx="${x+2}" cy="${y+6}" rx="8" ry="3" fill="#2A1B22" opacity=".22" filter="url(#${u}c)"/><path d="M${x},${y-6}q4,-14 10,-18" stroke="#3E5B2E" stroke-width="1.4" fill="none"/><circle cx="${x}" cy="${y}" r="7" fill="#9E1B32"/><circle cx="${x+1.2}" cy="${y+1.4}" r="5.4" fill="#7A1226" opacity=".55"/><circle cx="${x-2.4}" cy="${y-2.4}" r="1.9" fill="#FFFFFF" opacity=".75"/>`})}
-  return s+"</g></g></svg>";
-}
-function esc(t){return String(t).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
-
-/* ---------- placard text ---------- */
-const lab=(k,v)=>(OPT[k].find(o=>String(o[0])===String(v))||[,v])[1];
-function placardHTML(c,title){
-  const p=priceOf(c),sizes=tierSizes(c),paint=PAINTS.find(x=>x.id===c.paint).name;
-  const tiers=c.tiers===1?"single tier":(c.tiers===2?"two tiers":"three tiers");
-  const dec=c.decor.length?", "+c.decor.map(d=>lab("decor",d).toLowerCase()).join(", "):"";
-  return `<b>${esc(title)}</b>${esc(c.flavour)} sponge, ${esc(c.filling.toLowerCase())} filling, ${lab("finish",c.finish).toLowerCase()} buttercream in ${paint.toLowerCase()}${dec}. ${sizes[0]} in ${lab("shape",c.shape).toLowerCase()}, ${tiers}. Serves about ${p.serves}.`;
-}
-function autoTitle(c){const paint=PAINTS.find(x=>x.id===c.paint).name;
-  const f={smooth:"Quiet Study",ruffles:"Study in Ruffles",vintage:"Lambeth Revival",knife:"Palette Knife Sketch"}[c.finish];
-  return `${f}, ${paint}`}
-
 /* ---------- builder UI ---------- */
 const form=document.getElementById("form");
 function renderChips(){
@@ -747,8 +579,8 @@ function submit(){
    <div style="margin:22px 0;background:var(--wall);padding:18px"><span class="micro">Your order code</span><div class="code">${o.code}</div>
    <div style="font-size:13.5px;margin-top:10px">${placardHTML(o.cfg,autoTitle(o.cfg))}</div>
    <div style="margin-top:10px">${fmt(new Date(o.date+"T00:00"))}, ${lab("slot",o.slot)}. Estimate ${money(p.total)}, deposit ${money(p.deposit)}.</div></div>
-   <p class="note">Concept preview: no payment is taken and nothing is sent. Open the owner ledger to see how this request lands on the studio side.</p>
-   <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap"><a class="pill go" href="#studio" onclick="closeConfirm()">See it in the owner ledger</a><button class="pill ghost" onclick="closeConfirm()">Done</button></div>`;
+   <p class="note">Concept preview: no payment is taken and nothing is sent. Open the owner dashboard to see how this request lands on the bakery side.</p>
+   <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap"><a class="pill go" href="studio.html">See it in the owner dashboard</a><button class="pill ghost" onclick="closeConfirm()">Done</button></div>`;
   document.getElementById("confirm").classList.add("on");
 }
 function closeConfirm(){document.getElementById("confirm").classList.remove("on")}
@@ -782,6 +614,7 @@ function track(){
   const code=document.getElementById("trackCode").value.trim().toUpperCase().replace(/^CC(\d)/,"CC-$1");
   const o=orders.find(x=>x.code===code);const out=document.getElementById("trackOut");
   if(!o){out.innerHTML="We could not find that code. Check your confirmation, or message us on Instagram.";return}
+  if(o.status==="Declined"){out.innerHTML=`<div style="color:var(--ink)"><div class="code">${o.code}</div><div style="margin-top:6px">We could not take this one. Message us on Instagram and we will find another day or idea.</div></div>`;return}
   const idx=STAGES.indexOf(o.status);
   out.innerHTML=`<div style="color:var(--ink)"><div class="code">${o.code}</div><div style="margin-top:6px">${fmt(new Date(o.date+"T00:00"))}, ${lab("slot",o.slot)}</div>
    <div style="display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;margin-top:16px"><div>${drawCake(o.cfg)}</div><div style="font-size:13.5px">${placardHTML(o.cfg,autoTitle(o.cfg))}</div></div>
@@ -845,6 +678,7 @@ function renderLedger(loading){
 /* ---------- routing ---------- */
 function route(){
   const h=location.hash.slice(1);
+  if(h==="studio"){location.replace("studio.html");return}
   ["studio","terms","privacy"].forEach(n=>document.getElementById("ov-"+n).classList.toggle("on",h===n));
   document.body.style.overflow=["studio","terms","privacy"].includes(h)?"hidden":"";
   if(h==="studio"){renderLedger(true);setTimeout(()=>renderLedger(),500)}
