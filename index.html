@@ -40,23 +40,31 @@ a{color:inherit}
 /* SECTION HEADINGS: quiet, the shop's own serif and brick red */
 main h2{font-family:var(--hf);color:var(--brick);font-weight:500;font-size:clamp(30px,2.8vw,40px);line-height:1.1;letter-spacing:0}
 
-/* HOWTO: a small card that pops in beside the designer, then tucks into a pill */
-.howto{position:fixed;right:22px;bottom:24px;z-index:20;opacity:0;transform:translateY(24px);pointer-events:none;transition:opacity .6s var(--ease),transform .9s var(--ease)}
+/* HOWTO: a small pill, top right, that quietly cycles the four steps. Tap to see them all. */
+.howto{position:fixed;top:18px;right:22px;z-index:20;display:flex;flex-direction:column;align-items:flex-end;opacity:0;transform:translateY(-12px);pointer-events:none;transition:opacity .7s var(--ease),transform .9s var(--ease)}
 .howto.show{opacity:1;transform:none;pointer-events:auto}
-.howto-card{background:var(--wall);width:276px;padding:16px 20px 20px;border-radius:20px;box-shadow:0 28px 60px -28px rgba(42,27,34,.5),0 2px 6px -2px rgba(42,27,34,.08);transform-origin:100% 100%;transition:opacity .45s var(--ease),transform .7s var(--ease)}
-.howto.min .howto-card{opacity:0;transform:scale(.6) translateY(20px);pointer-events:none;position:absolute;right:0;bottom:0}
-.howto-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.howto-head b{font-family:var(--hf);color:var(--brick);font-weight:600;font-size:18px}
-.howto-x{font-size:20px;line-height:1;color:var(--graph);width:28px;height:28px;border-radius:50%;transition:background-color .4s var(--ease)}
-.howto-x:hover{background:var(--gesso)}
-.howto-pill{display:flex;align-items:center;gap:9px;background:var(--wall);border-radius:999px;padding:11px 18px;font-size:13px;box-shadow:0 18px 40px -20px rgba(42,27,34,.5);white-space:nowrap;opacity:0;transform:scale(.8);pointer-events:none;position:absolute;right:0;bottom:0;transform-origin:100% 100%;transition:opacity .45s var(--ease),transform .7s var(--ease)}
-.howto-pill i{width:7px;height:7px;border-radius:50%;background:var(--brick)}
-.howto.min .howto-pill{opacity:1;transform:none;pointer-events:auto;position:relative}
-.howto.show:not(.min) .journey li{animation:pop .8s var(--ease) both}
-.howto .journey li:nth-child(2){animation-delay:.08s!important}.howto .journey li:nth-child(3){animation-delay:.16s!important}.howto .journey li:nth-child(4){animation-delay:.24s!important}
-@keyframes pop{from{opacity:0;transform:translateX(14px)}}
+.howto-tick{display:flex;align-items:center;gap:12px;background:var(--wall);border-radius:999px;padding:8px 16px 8px 14px;box-shadow:0 14px 34px -20px rgba(42,27,34,.5);text-align:left;transition:box-shadow .6s var(--ease),transform .6s var(--ease)}
+.howto-tick:hover{box-shadow:0 18px 40px -20px rgba(42,27,34,.6);transform:translateY(-1px)}
+.howto .dots{display:flex;gap:4px}
+.howto .dots i{width:5px;height:5px;border-radius:99px;background:var(--hair);transition:width .7s var(--ease),background-color .7s var(--ease)}
+.howto .dots i.on{width:16px;background:var(--brick)}
+.howto .lbl{display:flex;flex-direction:column;line-height:1.1;min-width:172px;overflow:hidden}
+.howto .lbl em{font-style:normal;font-size:10.5px;color:var(--graph);letter-spacing:.03em}
+.howto .lbl b{font-family:var(--hf);color:var(--brick);font-weight:600;font-size:15.5px;transition:opacity .4s var(--ease),transform .5s var(--ease)}
+.howto .lbl b.out{opacity:0;transform:translateY(-7px)}
+.howto .lbl b.in{opacity:0;transform:translateY(7px);transition:none}
+.howto-list{background:var(--wall);border-radius:18px;width:262px;margin-top:8px;padding:16px 18px;box-shadow:0 24px 50px -28px rgba(42,27,34,.55);transform-origin:100% 0;opacity:0;transform:translateY(-6px) scale(.96);pointer-events:none;transition:opacity .45s var(--ease),transform .6s var(--ease)}
+.howto.open .howto-list{opacity:1;transform:none;pointer-events:auto}
 .howto .journey{margin:0}
-@media (max-width:960px){.howto{right:12px;bottom:84px}.howto-card{width:min(300px,calc(100vw - 24px))}}
+.howto .journey li{padding-bottom:12px}
+.howto .journey li.on::before{background:var(--brick)}
+.howto .journey li:not(.on)::before{background:transparent}
+.howto .journey b{font-size:16px}
+.howto .journey span{font-size:12px}
+.howto.open .journey li{animation:pop .7s var(--ease) both}
+.howto.open .journey li:nth-child(2){animation-delay:.06s}.howto.open .journey li:nth-child(3){animation-delay:.12s}.howto.open .journey li:nth-child(4){animation-delay:.18s}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}}
+@media (max-width:960px){.howto{top:auto;bottom:84px;right:12px}.howto{flex-direction:column-reverse}.howto-list{margin:0 0 8px}}
 
 /* JOURNEY: the four steps, quietly, inside the designer */
 .journey{list-style:none;margin:0 0 30px;padding:0}
@@ -397,9 +405,11 @@ tr.click:hover td{background:var(--wall)}
 </main>
 
 <aside class="howto" id="howto" aria-label="How ordering works">
-  <button class="howto-pill" type="button" id="howtoPill"><i></i>How ordering works</button>
-  <div class="howto-card">
-    <div class="howto-head"><b>How ordering works</b><button type="button" class="howto-x" id="howtoX" aria-label="Close">&times;</button></div>
+  <button class="howto-tick" type="button" id="howtoTick" aria-expanded="false">
+    <span class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+    <span class="lbl"><em id="howtoN">How it works, 1 of 4</em><b id="howtoStep">Design it here</b></span>
+  </button>
+  <div class="howto-list">
     <ol class="journey">
         <li class="on"><b>Design it here</b><span>Your sketch, price and pickup day reach us together.</span></li>
         <li><b>We confirm within a day</b><span>Then a 50% deposit holds your spot.</span></li>
@@ -882,16 +892,19 @@ renderCal();update();route();
   });
 })();
 
-/* ---------- how ordering works card ---------- */
+/* ---------- how ordering works pill ---------- */
 (function(){
-  const h=document.getElementById("howto"),sec=document.getElementById("commission");let seen=false;
-  new IntersectionObserver(([e])=>{
-    if(e.isIntersecting){h.classList.add("show");if(!seen){seen=true;setTimeout(()=>h.classList.add("show"),0)}}
-    else h.classList.remove("show")},{threshold:.2}).observe(sec);
-  document.getElementById("howtoX").onclick=()=>h.classList.add("min");
-  document.getElementById("howtoPill").onclick=()=>h.classList.remove("min");
-  let tucked=false;document.getElementById("form").addEventListener("click",e=>{
-    if(tucked||!e.target.closest(".chip,.daub,.day"))return;tucked=true;setTimeout(()=>h.classList.add("min"),1400)});
+  const h=document.getElementById("howto"),tick=document.getElementById("howtoTick"),lb=document.getElementById("howtoStep"),n=document.getElementById("howtoN");
+  const dots=[...h.querySelectorAll(".dots i")],lis=[...h.querySelectorAll(".journey li")],names=lis.map(l=>l.querySelector("b").textContent);
+  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;let i=0,timer=0,hover=false;
+  function go(k){i=k;dots.forEach((d,j)=>d.classList.toggle("on",j===i));lis.forEach((l,j)=>l.classList.toggle("on",j===i));n.textContent="How it works, "+(i+1)+" of 4";
+    if(calm){lb.textContent=names[i];return}
+    lb.classList.add("out");setTimeout(()=>{lb.textContent=names[i];lb.classList.remove("out");lb.classList.add("in");void lb.offsetWidth;lb.classList.remove("in")},380)}
+  function run(){clearInterval(timer);timer=setInterval(()=>{if(!hover&&!h.classList.contains("open"))go((i+1)%4)},3400)}
+  new IntersectionObserver(([e])=>{h.classList.toggle("show",e.isIntersecting);if(e.isIntersecting)run();else{clearInterval(timer);h.classList.remove("open")}},{threshold:.2}).observe(document.getElementById("commission"));
+  tick.onclick=()=>{const o=h.classList.toggle("open");tick.setAttribute("aria-expanded",o)};
+  h.onmouseenter=()=>hover=true;h.onmouseleave=()=>hover=false;
+  document.addEventListener("click",e=>{if(!h.contains(e.target))h.classList.remove("open")});
 })();
 </script>
 </body>
